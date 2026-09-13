@@ -1,10 +1,10 @@
-# EneryBuddy
+# EnergyBuddy
 
 > **Know your energy. Predict the storm. Prevent burnout.**
 
 **Team:** `[TEAM NAME]` — `[MEMBER 1]`, `[MEMBER 2]`, `[MEMBER 3]`, `[MEMBER 4]`  
 **Problem Statement:** Lifestyle Track — Beating the Burnout: Stress & Workload Manager  
-**Interactive Prototype:** [EneryBuddy prototype](https://enerybuddy-prototype.roberhwk.chatgpt.site)  
+**Interactive Prototype:** [EnergyBuddy prototype](https://enerybuddy-prototype.roberhwk.chatgpt.site)
 **Video Presentation:** `[ADD UNLISTED YOUTUBE LINK]`  
 **Presentation Slides:** `[ADD PUBLIC SLIDES LINK IF USED]`
 
@@ -24,7 +24,7 @@ The main stakeholders are students balancing study with work and personal respon
 
 ### Existing solutions and the gap
 
-| Product | What it does well | Gap EneryBuddy addresses |
+| Product | What it does well | Gap EnergyBuddy addresses |
 |---|---|---|
 | [Todoist](https://www.todoist.com/help/todoist/features/use-the-calendar-layout-in-todoist-lPHRQTu0o) | Organises tasks, durations and calendar schedules | Primarily visualises **when** work occurs; it does not model separate mental, physical and social reserves or forecast a personal energy crash. |
 | [Finch](https://help.finchcare.com/hc/en-us/articles/42149821015693-New-User-Guide) | Encourages self-care goals through a supportive companion | Supports recovery habits, but does not explain how a student's upcoming academic and work commitments combine into a high-risk day. |
@@ -32,7 +32,7 @@ The main stakeholders are students balancing study with work and personal respon
 
 ### Our solution
 
-**EneryBuddy** is a mobile-first workload companion that represents a student's mental, physical and social capacity as three energy batteries. It converts projected energy reserves into an intuitive seven-day weather forecast, highlighting overload before it becomes a crisis. When a storm is detected, a What-If planner explains the cause and lets the student split, move or recover around tasks while preserving essential commitments. The forecast is an explainable workload-risk estimate—not a medical diagnosis.
+**EnergyBuddy** is a mobile-first workload companion that represents a student's mental, physical and social capacity as three energy batteries. It converts projected energy reserves into an intuitive seven-day weather forecast, highlighting overload before it becomes a crisis. When a storm is detected, a What-If planner explains the cause and lets the student split, move or recover around tasks while preserving essential commitments. The forecast is an explainable workload-risk estimate—not a medical diagnosis.
 
 ### Core feature set
 
@@ -66,13 +66,13 @@ The main stakeholders are students balancing study with work and personal respon
 | 1 | Stress tracker + task list | Logging stress reports the problem but can become another chore. | Reduced input to one 15-second energy check-in. |
 | 2 | Energy Battery | A battery communicates capacity, but a single percentage hides the source of fatigue. | Split capacity into mental, physical and social batteries. |
 | 3 | Burnout Weather | A weekly forecast creates early warning, but students still need agency. | Added an explanation panel and What-If planner. |
-| 4 | EneryBuddy | Combining batteries and weather is memorable, actionable and feasible. | Scoped the prototype to one complete before/after journey. |
+| 4 | EnergyBuddy | Combining batteries and weather is memorable, actionable and feasible. | Scoped the prototype to one complete before/after journey. |
 
 ### 2.3 Ideation boards
 
 #### Mindmap
 
-![EneryBuddy ideation mindmap](docs/ideation-mindmap.svg)
+![EnergyBuddy ideation mindmap](docs/ideation-mindmap.svg)
 
 This map connects the underlying causes and observable signals of overload to interventions and intended outcomes. It captures the central insight that students experience workload as energy, not only time.
 
@@ -80,11 +80,11 @@ This map connects the underlying causes and observable signals of overload to in
 
 ![Student burnout problem tree](docs/problem-tree.svg)
 
-The tree separates visible consequences from root causes. EneryBuddy acts on fragmented planning, time-only tools and reactive recovery before they produce a crisis.
+The tree separates visible consequences from root causes. EnergyBuddy acts on fragmented planning, time-only tools and reactive recovery before they produce a crisis.
 
 #### Core user flow
 
-![EneryBuddy core user flow](docs/user-flow.svg)
+![EnergyBuddy core user flow](docs/user-flow.svg)
 
 The chosen flow moves from a low-effort signal to an explained warning, a controllable intervention and a measurable improvement.
 
@@ -105,7 +105,7 @@ Useful questions for the consultation:
 
 ## 3. Design & Prototype
 
-**UI Prototype:** [Open the interactive EneryBuddy prototype](https://enerybuddy-prototype.roberhwk.chatgpt.site)
+**UI Prototype:** [Open the interactive EnergyBuddy prototype](https://enerybuddy-prototype.roberhwk.chatgpt.site)
 
 ### Core flow covered
 
@@ -137,11 +137,11 @@ Useful questions for the consultation:
 
 ### A calendar for energy, not only time
 
-Conventional planning asks whether a task fits into an hour. EneryBuddy asks whether it fits into the student's projected capacity at that time.
+Conventional planning asks whether a task fits into an hour. EnergyBuddy asks whether it fits into the student's projected capacity at that time.
 
 ### Three-dimensional fatigue
 
-A single wellness score can hide the reason a student is struggling. EneryBuddy separates mental, physical and social energy, so a recovery suggestion can match the depleted category.
+A single wellness score can hide the reason a student is struggling. EnergyBuddy separates mental, physical and social energy, so a recovery suggestion can match the depleted category.
 
 ### Weather as an early-warning language
 
@@ -157,7 +157,7 @@ Every warning traces back to visible inputs—starting reserve, task demands and
 
 ## 5. Technical Architecture & Feasibility
 
-![EneryBuddy technical architecture](docs/architecture.svg)
+![EnergyBuddy technical architecture](docs/architecture.svg)
 
 ### Technology stack
 
@@ -213,11 +213,11 @@ Weights begin with conservative defaults and can later adapt from the student's 
 
 ### Primary user
 
-EneryBuddy first serves a university student who balances multiple modules with paid work, commuting and social commitments. This audience needs early visibility and permission to rebalance—not another streak, productivity score or generic reminder to “relax.”
+EnergyBuddy first serves a university student who balances multiple modules with paid work, commuting and social commitments. This audience needs early visibility and permission to rebalance—not another streak, productivity score or generic reminder to “relax.”
 
 ### Before and after
 
-| Before EneryBuddy | After EneryBuddy |
+| Before EnergyBuddy | After EnergyBuddy |
 |---|---|
 | An open calendar slot looks usable even after an exhausting day. | The slot is interpreted against mental, physical and social reserve. |
 | Overload becomes obvious only after sleep or work deteriorates. | A Storm warning appears several days earlier. |
@@ -226,7 +226,7 @@ EneryBuddy first serves a university student who balances multiple modules with 
 
 ### Prototype impact scenario
 
-A student begins Thursday with 61% energy but faces 85% demand from a lab, assignment, revision block and paid shift. Their original plan ends at a 7% reserve. EneryBuddy splits the assignment, protects lunch and moves one flexible revision block; the revised plan ends at 31%. That **+24 percentage-point safety margin** is the clear before/after moment demonstrated in the prototype.
+A student begins Thursday with 61% energy but faces 85% demand from a lab, assignment, revision block and paid shift. Their original plan ends at a 7% reserve. EnergyBuddy splits the assignment, protects lunch and moves one flexible revision block; the revised plan ends at 31%. That **+24 percentage-point safety margin** is the clear before/after moment demonstrated in the prototype.
 
 ### Reach and scalability
 
@@ -251,7 +251,7 @@ npm run build
 
 ## 8. Responsible Use
 
-EneryBuddy is a workload-awareness prototype. It does not diagnose, treat or prevent a medical condition, and its forecast should never replace professional care. A production version would minimise data collection, keep task details private by default, allow full data deletion and direct students to appropriate campus or emergency support when needed.
+EnergyBuddy is a workload-awareness prototype. It does not diagnose, treat or prevent a medical condition, and its forecast should never replace professional care. A production version would minimise data collection, keep task details private by default, allow full data deletion and direct students to appropriate campus or emergency support when needed.
 
 ## Submission checklist
 

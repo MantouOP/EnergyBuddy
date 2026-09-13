@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650" role="img" aria-labelledby="title desc">
-  <title id="title">EneryBuddy technical architecture</title>
+  <title id="title">EnergyBuddy technical architecture</title>
   <desc id="desc">The mobile-first interface connects to an explainable scoring engine and optional Supabase data services.</desc>
   <rect width="1400" height="650" rx="32" fill="#f4f8f7"/>
   <text x="58" y="64" font-family="Arial" font-size="30" font-weight="700" fill="#123f4a">Technical architecture</text>

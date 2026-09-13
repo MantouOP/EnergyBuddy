@@ -7,16 +7,21 @@ import {
   CalendarDays,
   Check,
   ChevronRight,
+  CircleHelp,
   CloudRain,
   Coffee,
   Dumbbell,
+  Gauge,
   HeartHandshake,
+  LayoutDashboard,
   Lightbulb,
+  LogOut,
   MoonStar,
   MoveRight,
-  Sparkles,
+  Settings,
   SunMedium,
-  Users,
+  UserRound,
+  WandSparkles,
   Zap,
 } from 'lucide-react';
 
@@ -24,8 +29,6 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-
-type EnergyKind = 'Mental' | 'Physical' | 'Social';
 
 const baseForecast = [
   { day: 'Mon', date: '13', weather: 'Clear', icon: SunMedium, energy: 72 },
@@ -46,44 +49,16 @@ const balancedForecast = baseForecast.map((item) =>
 );
 
 const tasks = [
-  {
-    time: '9:00',
-    title: 'Data Structures lecture',
-    detail: '1 hr · campus',
-    kind: 'Mental' as EnergyKind,
-    cost: 12,
-    icon: Brain,
-  },
-  {
-    time: '12:30',
-    title: 'Lunch away from screens',
-    detail: '30 min · recovery',
-    kind: 'Physical' as EnergyKind,
-    cost: -8,
-    icon: Coffee,
-  },
-  {
-    time: '2:00',
-    title: 'Algorithms assignment',
-    detail: '2.5 hrs · deep work',
-    kind: 'Mental' as EnergyKind,
-    cost: 28,
-    icon: Lightbulb,
-  },
-  {
-    time: '6:30',
-    title: 'Society committee meeting',
-    detail: '1 hr · group work',
-    kind: 'Social' as EnergyKind,
-    cost: 18,
-    icon: Users,
-  },
+  { time: '9:00', title: 'Data Structures lecture', detail: '1 hr · campus', cost: 12, icon: Brain },
+  { time: '12:30', title: 'Lunch away from screens', detail: '30 min · recovery', cost: -8, icon: Coffee },
+  { time: '2:00', title: 'Algorithms assignment', detail: '2.5 hrs · deep work', cost: 28, icon: Lightbulb },
+  { time: '6:30', title: 'Society committee meeting', detail: '1 hr · group work', cost: 18, icon: HeartHandshake },
 ];
 
-const energy = [
-  { label: 'Mental', value: 42, icon: Brain, color: '#7557ff', tint: '#eeeaff' },
-  { label: 'Physical', value: 58, icon: Dumbbell, color: '#f28b43', tint: '#fff0e5' },
-  { label: 'Social', value: 76, icon: HeartHandshake, color: '#25a788', tint: '#e5f7f1' },
+const batteries = [
+  { label: 'Mental energy', value: 42, note: 'Protect focus', icon: Brain, tone: 'violet' },
+  { label: 'Physical energy', value: 58, note: 'Holding steady', icon: Dumbbell, tone: 'pink' },
+  { label: 'Social energy', value: 76, note: 'Good reserve', icon: HeartHandshake, tone: 'mint' },
 ];
 
 export default function Home() {
@@ -92,22 +67,10 @@ export default function Home() {
   const [checkIn, setCheckIn] = useState(62);
   const [saved, setSaved] = useState(false);
   const forecast = rebalanced ? balancedForecast : baseForecast;
-
   const averageEnergy = useMemo(
     () => Math.round(forecast.reduce((sum, item) => sum + item.energy, 0) / forecast.length),
     [forecast],
   );
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const view = params.get('view');
-    if (view === 'today' || view === 'forecast' || view === 'balance') {
-      setActiveTab(view);
-    }
-    if (params.get('balanced') === 'true') {
-      setRebalanced(true);
-    }
-  }, []);
 
   useEffect(() => {
     type ModelContext = {
@@ -126,14 +89,12 @@ export default function Home() {
     const modelContext = (document as Document & { modelContext?: ModelContext }).modelContext;
     if (!modelContext?.registerTool) return;
     const lifecycle = new AbortController();
-
     void Promise.resolve(
       modelContext.registerTool(
         {
           name: 'apply_balanced_plan',
           title: 'Apply balanced Thursday plan',
-          description:
-            'Apply EneryBuddy’s proposed Thursday schedule changes and update the visible energy forecast.',
+          description: 'Apply EnergyBuddy’s Thursday changes and update the visible energy forecast.',
           inputSchema: { type: 'object', properties: {}, additionalProperties: false },
           annotations: { readOnlyHint: false, untrustedContentHint: false },
           execute(input) {
@@ -148,221 +109,157 @@ export default function Home() {
         { signal: lifecycle.signal },
       ),
     ).catch(() => undefined);
-
     return () => lifecycle.abort();
   }, []);
 
   return (
-    <main className="app-page">
-      <div className="ambient ambient-one" aria-hidden="true" />
-      <div className="ambient ambient-two" aria-hidden="true" />
-
-      <section className="app-shell" aria-label="EneryBuddy student dashboard">
-        <header className="topbar">
-          <div className="brand" aria-label="EneryBuddy home">
-            <span className="brand-mark"><BatteryCharging /></span>
-            <span>EneryBuddy</span>
+    <main className="app-frame">
+      <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="dashboard-app">
+        <aside className="sidebar">
+          <div className="brand">
+            <span className="brand-icon"><BatteryCharging /></span>
+            <div><strong>EnergyBuddy</strong><span>Burnout Coach</span></div>
           </div>
-          <div className="today-chip">
-            <CalendarDays /> Monday, 13 September
-          </div>
-          <button className="avatar" aria-label="Open profile">AM</button>
-        </header>
 
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="main-tabs">
-          <TabsList className="nav-tabs" aria-label="Main navigation">
-            <TabsTrigger value="today">Today</TabsTrigger>
-            <TabsTrigger value="forecast">Forecast</TabsTrigger>
-            <TabsTrigger value="balance">What-if</TabsTrigger>
+          <TabsList className="side-nav" aria-label="Main navigation">
+            <TabsTrigger value="today"><LayoutDashboard /> Dashboard</TabsTrigger>
+            <TabsTrigger value="forecast"><CloudRain /> Energy Forecast</TabsTrigger>
+            <TabsTrigger value="balance"><WandSparkles /> What-If Planner</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="today" className="tab-panel">
-            <div className="dashboard-grid">
-              <section className="weather-hero">
-                <div className="hero-copy">
-                  <span className="eyebrow"><span className="pulse-dot" /> TODAY’S ENERGY WEATHER</span>
-                  <h1>Cloudy, with a<br /><em>storm ahead.</em></h1>
-                  <p>You’re managing today, but Thursday’s commitments could drain your battery to <strong>7%</strong>.</p>
-                  <Button className="primary-action" onClick={() => setActiveTab('balance')}>
-                    Rebalance Thursday <ChevronRight />
-                  </Button>
+          <nav className="secondary-nav" aria-label="Secondary navigation">
+            <button><Gauge /> Weekly Insights</button>
+            <button><CircleHelp /> Get Support</button>
+          </nav>
+
+          <div className="sidebar-bottom">
+            <button><UserRound /> Profile</button>
+            <button><Settings /> Settings</button>
+            <button><LogOut /> Log out</button>
+          </div>
+        </aside>
+
+        <section className="workspace">
+          <header className="workspace-header">
+            <div>
+              <h1>Hello, Alex!</h1>
+              <p>Ready to protect your energy today?</p>
+            </div>
+            <div className="status-cluster">
+              <div className="date-status"><strong>3:09 PM</strong><span><CalendarDays /> Monday, Sep 13</span></div>
+              <div className="weather-status"><CloudRain /><span><strong>Cloudy</strong>58% now</span></div>
+              <button className="avatar" aria-label="Open profile">AM</button>
+            </div>
+          </header>
+
+          <TabsContent value="today" className="view-panel">
+            <section className="metric-grid" aria-label="Energy summary">
+              {batteries.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <article className={`metric-card ${item.tone}`} key={item.label}>
+                    <span className="metric-icon"><Icon /></span>
+                    <div><span>{item.label}</span><strong>{item.value}%</strong><small>{item.note}</small></div>
+                  </article>
+                );
+              })}
+              <article className="metric-card yellow">
+                <span className="metric-icon"><Zap /></span>
+                <div><span>Weekly reserve</span><strong>{averageEnergy}%</strong><small>{rebalanced ? 'Plan improved' : 'Storm detected'}</small></div>
+              </article>
+            </section>
+
+            <div className="today-grid">
+              <section className="panel forecast-chart-panel">
+                <div className="panel-heading">
+                  <div><span className="kicker">NEXT 7 DAYS</span><h2>Your energy forecast</h2></div>
+                  <Button variant="ghost" onClick={() => setActiveTab('forecast')}>Full forecast <ChevronRight /></Button>
                 </div>
-                <div className="weather-orbit" aria-label="Current energy is 58 percent">
-                  <span className="orbit orbit-one" />
-                  <span className="orbit orbit-two" />
-                  <CloudRain className="weather-icon" strokeWidth={1.25} />
-                  <span className="weather-value">58%</span>
-                  <span className="weather-caption">energy now</span>
+                <div className="energy-chart" aria-label="Seven day projected energy chart">
+                  {forecast.map((item) => (
+                    <div className="chart-column" key={item.day}>
+                      <div className="chart-track"><span className={item.weather.toLowerCase()} style={{ height: `${item.energy}%` }}><b>{item.energy}%</b></span></div>
+                      <small>{item.day}</small>
+                    </div>
+                  ))}
                 </div>
+                <div className="chart-legend"><span><i className="clear-dot" /> Safe reserve</span><span><i className="storm-dot" /> Attention needed</span></div>
               </section>
 
-              <section className="battery-section" aria-labelledby="battery-title">
-                <div className="section-heading">
-                  <div>
-                    <span className="eyebrow">YOUR THREE BATTERIES</span>
-                    <h2 id="battery-title">Not all tired feels the same.</h2>
-                  </div>
-                  <span className="updated">Updated just now</span>
-                </div>
-                <div className="battery-grid">
-                  {energy.map((item) => {
-                    const Icon = item.icon;
-                    return (
-                      <article className="battery-card" key={item.label}>
-                        <div className="battery-ring" style={{ '--energy': item.value, '--ring': item.color, '--tint': item.tint } as React.CSSProperties}>
-                          <div className="battery-center"><Icon /><strong>{item.value}%</strong></div>
-                        </div>
-                        <div className="battery-copy">
-                          <h3>{item.label}</h3>
-                          <p>{item.value < 50 ? 'Needs protection' : item.value < 70 ? 'Holding steady' : 'Good reserve'}</p>
-                        </div>
-                      </article>
-                    );
-                  })}
-                </div>
-              </section>
-
-              <section className="schedule-card">
-                <div className="section-heading compact">
-                  <div>
-                    <span className="eyebrow">TODAY · 4 COMMITMENTS</span>
-                    <h2>Your energy plan</h2>
-                  </div>
-                  <span className="capacity-pill">84% capacity</span>
-                </div>
+              <section className="panel load-panel">
+                <div className="panel-heading"><div><span className="kicker">TODAY</span><h2>Your energy plan</h2></div><span className="load-chip">84% capacity</span></div>
                 <div className="task-list">
                   {tasks.map((task) => {
                     const Icon = task.icon;
                     return (
                       <article className="task-row" key={task.title}>
-                        <time>{task.time}</time>
-                        <span className="task-icon"><Icon /></span>
-                        <div className="task-copy"><strong>{task.title}</strong><span>{task.detail}</span></div>
-                        <span className={task.cost < 0 ? 'energy-cost restore' : 'energy-cost'}>{task.cost < 0 ? '+' : '−'}{Math.abs(task.cost)}%</span>
+                        <time>{task.time}</time><span className="task-icon"><Icon /></span>
+                        <div><strong>{task.title}</strong><small>{task.detail}</small></div>
+                        <span className={task.cost < 0 ? 'cost recover' : 'cost'}>{task.cost < 0 ? '+' : '−'}{Math.abs(task.cost)}%</span>
                       </article>
                     );
                   })}
                 </div>
               </section>
 
-              <aside className="checkin-card">
-                <div className="checkin-icon"><Sparkles /></div>
-                <span className="eyebrow">15-SECOND CHECK-IN</span>
-                <h2>How charged do you feel?</h2>
-                <div className="checkin-value">{checkIn}%</div>
-                <Slider value={[checkIn]} onValueChange={(value) => { setCheckIn(value[0]); setSaved(false); }} aria-label="Current energy level" />
+              <section className="panel storm-panel">
+                <span className="storm-icon"><Zap /></span>
+                <div><span className="kicker">THURSDAY · STORM WATCH</span><h2>Your plan drops to 7% reserve.</h2><p>Deep work and a late shift collide without recovery. Three small changes can make it manageable.</p></div>
+                <Button onClick={() => setActiveTab('balance')}>Rebalance now <MoveRight /></Button>
+              </section>
+
+              <section className="panel checkin-panel">
+                <div className="panel-heading"><div><span className="kicker">15-SECOND CHECK-IN</span><h2>How charged do you feel?</h2></div><strong className="checkin-number">{checkIn}%</strong></div>
+                <Slider value={[checkIn]} onValueChange={(value) => { setCheckIn(typeof value === 'number' ? value : value[0]); setSaved(false); }} aria-label="Current energy level" />
                 <div className="slider-labels"><span>Running low</span><span>Fully charged</span></div>
-                <Button variant={saved ? 'secondary' : 'default'} className="save-checkin" onClick={() => setSaved(true)}>
-                  {saved ? <><Check /> Check-in saved</> : 'Save check-in'}
-                </Button>
-              </aside>
+                <Button variant={saved ? 'secondary' : 'default'} onClick={() => setSaved(true)}>{saved ? <><Check /> Saved</> : 'Save check-in'}</Button>
+              </section>
             </div>
           </TabsContent>
 
-          <TabsContent value="forecast" className="tab-panel">
-            <section className="forecast-page">
-              <div className="forecast-intro">
-                <div>
-                  <span className="eyebrow">7-DAY OUTLOOK</span>
-                  <h1>Your week, before it happens.</h1>
-                  <p>We combine your check-ins, task intensity and recovery gaps into one explainable energy forecast.</p>
-                </div>
-                <div className="week-average"><span>Weekly reserve</span><strong>{averageEnergy}%</strong><small>{rebalanced ? '+6% after changes' : 'Storm risk detected'}</small></div>
-              </div>
-
-              <div className="forecast-strip">
-                {forecast.map((item) => {
-                  const Icon = item.icon;
-                  return (
-                    <article className={`forecast-day ${item.weather.toLowerCase()} ${item.day === 'Thu' ? 'selected' : ''}`} key={item.day}>
-                      <div className="day-label"><span>{item.day}</span><strong>{item.date}</strong></div>
-                      <Icon />
-                      <span className="weather-name">{item.weather}</span>
-                      <strong className="day-energy">{item.energy}%</strong>
-                      <Progress value={item.energy} aria-label={`${item.day} energy reserve ${item.energy}%`} />
-                    </article>
-                  );
-                })}
-              </div>
-
-              <div className="storm-explain">
-                <div className="storm-symbol"><Zap /></div>
-                <div className="storm-copy">
-                  <span className="eyebrow">WHY THURSDAY IS STORMY</span>
-                  <h2>Demand exceeds your projected energy by 24%.</h2>
-                  <p>Two deep-work blocks sit beside a late shift, with no meal or reset time between them.</p>
-                </div>
-                <div className="forecast-metrics">
-                  <div><span>Starting battery</span><strong>61%</strong></div>
-                  <MoveRight />
-                  <div><span>Energy demand</span><strong>85%</strong></div>
-                  <MoveRight />
-                  <div className="danger-metric"><span>Ending reserve</span><strong>{rebalanced ? '31%' : '7%'}</strong></div>
-                </div>
-              </div>
-
-              <div className="legend" aria-label="Forecast legend">
-                <span><i className="clear-dot" /> Clear · 65–100%</span>
-                <span><i className="cloudy-dot" /> Cloudy · 30–64%</span>
-                <span><i className="heavy-dot" /> Heavy · 15–29%</span>
-                <span><i className="storm-dot" /> Storm · below 15%</span>
-              </div>
+          <TabsContent value="forecast" className="view-panel">
+            <div className="view-title"><span className="kicker">7-DAY OUTLOOK</span><h2>Your week, before it happens.</h2><p>Check-ins, task intensity and recovery gaps become one explainable forecast.</p></div>
+            <section className="forecast-grid">
+              {forecast.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <article className={`forecast-day ${item.weather.toLowerCase()} ${item.day === 'Thu' ? 'selected' : ''}`} key={item.day}>
+                    <div><span>{item.day}</span><strong>{item.date}</strong></div><Icon /><span>{item.weather}</span><b>{item.energy}%</b>
+                    <Progress value={item.energy} aria-label={`${item.day} energy reserve ${item.energy}%`} />
+                  </article>
+                );
+              })}
             </section>
+            <section className="panel forecast-explainer">
+              <span className="storm-icon"><Zap /></span>
+              <div className="explain-copy"><span className="kicker">WHY THURSDAY IS STORMY</span><h2>Demand exceeds projected energy by 24%.</h2><p>Two deep-work blocks sit beside a late shift, with no meal or reset time between them.</p></div>
+              <div className="forecast-math"><div><span>Starting</span><b>61%</b></div><MoveRight /><div><span>Demand</span><b>85%</b></div><MoveRight /><div className="danger"><span>Ending</span><b>{rebalanced ? '31%' : '7%'}</b></div></div>
+            </section>
+            <div className="forecast-actions"><div className="legend"><span><i className="clear-dot" /> Clear 65–100%</span><span><i className="cloudy-dot" /> Cloudy 30–64%</span><span><i className="heavy-dot" /> Heavy 15–29%</span><span><i className="storm-dot" /> Storm below 15%</span></div><Button onClick={() => setActiveTab('balance')}>Open What-If Planner</Button></div>
           </TabsContent>
 
-          <TabsContent value="balance" className="tab-panel">
-            <section className="balance-page">
-              <div className="balance-intro">
-                <span className="eyebrow">WHAT-IF PLANNER · THURSDAY</span>
-                <h1>Make room before you run out.</h1>
-                <p>EneryBuddy found three small changes that protect your essentials and rebuild a safe energy reserve.</p>
-              </div>
-
-              <div className="before-after">
-                <article className="plan-column before">
-                  <div className="plan-heading"><span>Current plan</span><strong>7% left</strong></div>
-                  <div className="mini-weather"><Zap /><span><strong>Storm</strong> · overload likely</span></div>
-                  <div className="plan-items">
-                    <div><span>9:00</span><p><strong>Database lab</strong><small>−18% mental</small></p></div>
-                    <div><span>12:00</span><p><strong>Algorithms assignment</strong><small>−32% mental</small></p></div>
-                    <div><span>4:00</span><p><strong>Revision session</strong><small>−20% mental</small></p></div>
-                    <div><span>6:00</span><p><strong>Part-time shift</strong><small>−28% physical</small></p></div>
-                  </div>
-                </article>
-
-                <div className="swap-arrow"><MoveRight /></div>
-
-                <article className={`plan-column after ${rebalanced ? 'accepted' : ''}`}>
-                  <div className="plan-heading"><span>Balanced plan</span><strong>31% left</strong></div>
-                  <div className="mini-weather safer"><CloudRain /><span><strong>Cloudy</strong> · manageable</span></div>
-                  <div className="plan-items">
-                    <div><span>9:00</span><p><strong>Database lab</strong><small>Kept · essential</small></p></div>
-                    <div><span>12:00</span><p><strong>Assignment · part 1</strong><small>Split into 75 min</small></p></div>
-                    <div className="recovery-item"><span>1:30</span><p><strong>Lunch + reset</strong><small>+12% recovery</small></p></div>
-                    <div><span>6:00</span><p><strong>Part-time shift</strong><small>Kept · essential</small></p></div>
-                    <div className="moved-item"><span>Fri</span><p><strong>Revision session</strong><small>Moved to a clear day</small></p></div>
-                  </div>
-                </article>
-              </div>
-
-              <div className="impact-bar">
-                <div><span className="impact-icon"><MoonStar /></span><p><strong>+24% safer reserve</strong><small>No essential commitments removed</small></p></div>
-                <Button className="accept-button" onClick={() => setRebalanced(true)} disabled={rebalanced}>
-                  {rebalanced ? <><Check /> Plan applied</> : 'Apply balanced plan'}
-                </Button>
-              </div>
-
-              {rebalanced && (
-                <div className="success-note" role="status">
-                  <Check /> Thursday changed from Storm to Cloudy. Your forecast has been updated.
-                </div>
-              )}
+          <TabsContent value="balance" className="view-panel">
+            <div className="view-title"><span className="kicker">WHAT-IF PLANNER · THURSDAY</span><h2>Make room before you run out.</h2><p>Preview small changes, keep the essentials, then update your forecast.</p></div>
+            <section className="before-after">
+              <article className="plan-card current-plan">
+                <div className="plan-heading"><span>Current plan</span><strong>7% left</strong></div>
+                <div className="plan-weather danger-weather"><Zap /><span><b>Storm</b> · overload likely</span></div>
+                <div className="plan-items"><div><span>9:00</span><p><b>Database lab</b><small>−18% mental</small></p></div><div><span>12:00</span><p><b>Algorithms assignment</b><small>−32% mental</small></p></div><div><span>4:00</span><p><b>Revision session</b><small>−20% mental</small></p></div><div><span>6:00</span><p><b>Part-time shift</b><small>−28% physical</small></p></div></div>
+              </article>
+              <div className="swap-arrow"><MoveRight /></div>
+              <article className={`plan-card balanced-plan ${rebalanced ? 'accepted' : ''}`}>
+                <div className="plan-heading"><span>Balanced plan</span><strong>31% left</strong></div>
+                <div className="plan-weather safe-weather"><CloudRain /><span><b>Cloudy</b> · manageable</span></div>
+                <div className="plan-items"><div><span>9:00</span><p><b>Database lab</b><small>Kept · essential</small></p></div><div><span>12:00</span><p><b>Assignment · part 1</b><small>Split into 75 min</small></p></div><div className="recovery-item"><span>1:30</span><p><b>Lunch + reset</b><small>+12% recovery</small></p></div><div><span>6:00</span><p><b>Part-time shift</b><small>Kept · essential</small></p></div><div><span>Fri</span><p><b>Revision session</b><small>Moved to a clear day</small></p></div></div>
+              </article>
             </section>
+            <section className="apply-panel"><div><span className="apply-icon"><MoonStar /></span><p><b>+24% safer reserve</b><small>No essential commitments removed</small></p></div><Button onClick={() => setRebalanced(true)} disabled={rebalanced}>{rebalanced ? <><Check /> Plan applied</> : 'Apply balanced plan'}</Button></section>
+            {rebalanced && <output className="success-note"><Check /> Thursday changed from Storm to Cloudy. Your forecast is updated.</output>}
           </TabsContent>
-        </Tabs>
-      </section>
 
-      <p className="safety-note">EneryBuddy offers workload guidance, not medical diagnosis. If stress feels unmanageable, contact someone you trust or your university support service.</p>
+          <footer>EnergyBuddy offers workload guidance, not medical diagnosis. If stress feels unmanageable, contact someone you trust or your university support service.</footer>
+        </section>
+      </Tabs>
     </main>
   );
 }

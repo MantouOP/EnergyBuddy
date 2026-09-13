@@ -13,9 +13,10 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'EneryBuddy — Student energy forecast',
+  title: 'EnergyBuddy — Student energy forecast',
   description:
     'A student workload companion that predicts energy strain and helps rebalance the week before burnout hits.',
+  icons: { icon: '/favicon.svg' },
 };
 
 export default function RootLayout({

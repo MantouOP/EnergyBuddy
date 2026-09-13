@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1500" height="520" viewBox="0 0 1500 520" role="img" aria-labelledby="title desc">
-  <title id="title">EneryBuddy core user flow</title>
+  <title id="title">EnergyBuddy core user flow</title>
   <desc id="desc">A six-step user journey from a quick check-in to a safer updated forecast.</desc>
   <rect width="1500" height="520" rx="32" fill="#eef5f4"/>
   <text x="58" y="63" font-family="Arial" font-size="30" font-weight="700" fill="#123f4a">Core user flow: from signal to safer schedule</text>

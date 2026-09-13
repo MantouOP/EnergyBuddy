@@ -1,4 +1,4 @@
-# EneryBuddy submission checklist
+# EnergyBuddy submission checklist
 
 ## Information only the team can provide
 
