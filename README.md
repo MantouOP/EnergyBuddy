@@ -168,7 +168,7 @@ Ghost Mode creates non-negotiable no-contact blocks for decompression or focus. 
 | Interactive map and location permission | **Built** | Map-click pins, browser geolocation and removal work during the session. |
 | Social meter, agenda and timer | **Built** | Social reserve and Ghost Mode react to local prototype data; the 30-minute timer is functional. |
 | Rest Quests and Recharge Curve | **Interactive prototype** | Quest completion and duration comparison update immediately. |
-| Browser persistence and reset | **Built** | Plan, check-in, quests and Ghost Mode survive refreshes locally; one confirmed action restores demo defaults. |
+| Browser persistence | **Built** | Plan, check-in, quests and Ghost Mode survive refreshes locally. |
 | Cloud database persistence | **Planned** | Requires user-owned storage, deletion controls and row-level security. |
 | Google Calendar synchronisation | **Planned** | Requires a separately consented calendar scope and conflict handling. |
 | HealthKit / Google Fit verification | **Planned** | Must be permission-based and limited to the minimum necessary sensor data. |

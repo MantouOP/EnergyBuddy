@@ -18,7 +18,6 @@ import {
   Dumbbell,
   EyeOff,
   Footprints,
-  Gauge,
   HeartHandshake,
   LayoutDashboard,
   Lightbulb,
@@ -451,28 +450,6 @@ export default function Home() {
     setGhostBlocks((current) => current.filter((block) => block.id !== id));
   };
 
-  const resetDemo = () => {
-    if (!window.confirm('Reset your EnergyBuddy plan, quests, pins and protected blocks to the demo defaults?')) return;
-    setEnergyTasks(initialTasks.map((task) => ({ ...task })));
-    setCheckIn(62);
-    setCompletedQuests(['walk']);
-    setRestMinutes(40);
-    setRebalanced(false);
-    setGhostBlocks(initialGhostBlocks.map((block) => ({ ...block })));
-    setLocationPins(initialLocationPins.map((pin) => ({ ...pin })));
-    setAiAssessment(null);
-    setAssessmentError('');
-    setMeetingAgendas({});
-    setActiveMeetingId(null);
-    setMeetingSeconds(30 * 60);
-    setTimerRunning(false);
-    setEnvironmentChecked(false);
-    setSaved(false);
-    setProfileVisible(false);
-    setSupportVisible(false);
-    setActiveTab('today');
-  };
-
   if (status !== 'authenticated') {
     return (
       <main className="login-shell">
@@ -528,13 +505,11 @@ export default function Home() {
           </TabsList>
 
           <nav className="secondary-nav" aria-label="Secondary navigation">
-            <button onClick={() => setActiveTab('forecast')}><Gauge /> Weekly Insights</button>
             <button onClick={() => setSupportVisible((current) => !current)}><CircleHelp /> Get Support</button>
           </nav>
 
           <div className="sidebar-bottom">
             <button onClick={() => setProfileVisible((current) => !current)}><UserRound /> Profile</button>
-            <button onClick={resetDemo}><RotateCcw /> Reset demo</button>
             <button onClick={() => void signOut({ redirectTo: '/' })}><LogOut /> Log out</button>
           </div>
         </aside>
