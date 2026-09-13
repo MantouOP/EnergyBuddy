@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="760" viewBox="0 0 1400 760" role="img" aria-labelledby="title desc">
+  <title id="title">Student burnout problem tree</title>
+  <desc id="desc">Root causes flow into invisible cumulative overload, producing academic, health and social consequences.</desc>
+  <rect width="1400" height="760" rx="32" fill="#f6f9f8"/>
+  <text x="60" y="62" font-family="Arial" font-size="30" font-weight="700" fill="#123f4a">Problem tree: why burnout arrives “suddenly”</text>
+  <text x="60" y="93" font-family="Arial" font-size="16" fill="#61797e">The final crash is visible. The accumulating load usually is not.</text>
+  <g fill="none" stroke="#9bb0b1" stroke-width="3">
+    <path d="M700 375 L700 280"/><path d="M700 280 C520 280 480 205 305 205"/><path d="M700 280 L700 205"/><path d="M700 280 C880 280 920 205 1095 205"/>
+    <path d="M700 455 L700 540"/><path d="M700 540 C520 540 480 625 305 625"/><path d="M700 540 L700 625"/><path d="M700 540 C880 540 920 625 1095 625"/>
+  </g>
+  <g font-family="Arial">
+    <text x="700" y="133" text-anchor="middle" font-size="13" font-weight="700" fill="#8d5b49" letter-spacing="2">VISIBLE CONSEQUENCES</text>
+    <g fill="#fff0e9" stroke="#efb39d" stroke-width="2">
+      <rect x="180" y="165" width="250" height="80" rx="20"/><rect x="575" y="165" width="250" height="80" rx="20"/><rect x="970" y="165" width="250" height="80" rx="20"/>
+    </g>
+    <g fill="#713d30" font-size="18" font-weight="700" text-anchor="middle">
+      <text x="305" y="199">Missed deadlines</text><text x="305" y="224" font-size="14" font-weight="400">and falling performance</text>
+      <text x="700" y="199">Exhaustion</text><text x="700" y="224" font-size="14" font-weight="400">and disrupted sleep</text>
+      <text x="1095" y="199">Withdrawal</text><text x="1095" y="224" font-size="14" font-weight="400">from friends and support</text>
+    </g>
+    <rect x="435" y="340" width="530" height="110" rx="28" fill="#123f4a"/>
+    <text x="700" y="382" text-anchor="middle" fill="#d7ff68" font-size="14" font-weight="700" letter-spacing="2">CORE PROBLEM</text>
+    <text x="700" y="419" text-anchor="middle" fill="white" font-size="24" font-weight="700">Cumulative overload stays invisible until it is critical.</text>
+    <text x="700" y="507" text-anchor="middle" font-size="13" font-weight="700" fill="#587176" letter-spacing="2">ROOT CAUSES</text>
+    <g fill="#e8f5f1" stroke="#9fd3c5" stroke-width="2">
+      <rect x="180" y="585" width="250" height="80" rx="20"/><rect x="575" y="585" width="250" height="80" rx="20"/><rect x="970" y="585" width="250" height="80" rx="20"/>
+    </g>
+    <g fill="#24584e" font-size="18" font-weight="700" text-anchor="middle">
+      <text x="305" y="619">Fragmented planning</text><text x="305" y="644" font-size="14" font-weight="400">tasks, shifts and errands</text>
+      <text x="700" y="619">Time-only tools</text><text x="700" y="644" font-size="14" font-weight="400">ignore mental and social cost</text>
+      <text x="1095" y="619">Reactive recovery</text><text x="1095" y="644" font-size="14" font-weight="400">rest begins after the crash</text>
+    </g>
+  </g>
+</svg>

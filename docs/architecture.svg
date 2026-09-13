@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650" role="img" aria-labelledby="title desc">
+  <title id="title">EneryBuddy technical architecture</title>
+  <desc id="desc">The mobile-first interface connects to an explainable scoring engine and optional Supabase data services.</desc>
+  <rect width="1400" height="650" rx="32" fill="#f4f8f7"/>
+  <text x="58" y="64" font-family="Arial" font-size="30" font-weight="700" fill="#123f4a">Technical architecture</text>
+  <text x="58" y="95" font-family="Arial" font-size="16" fill="#61797e">Prototype-first today; a realistic path to secure, personalized forecasting tomorrow.</text>
+  <g fill="none" stroke="#8da6a8" stroke-width="3">
+    <path d="M350 325 L495 325"/><path d="M805 325 L950 325"/><path d="M650 430 L650 505"/>
+  </g>
+  <g fill="#d7ff68"><path d="M486 317 L502 325 L486 333Z"/><path d="M941 317 L957 325 L941 333Z"/><path d="M642 496 L650 512 L658 496Z"/></g>
+  <g font-family="Arial">
+    <rect x="80" y="195" width="270" height="260" rx="28" fill="#123f4a"/>
+    <text x="215" y="242" text-anchor="middle" fill="#d7ff68" font-size="14" font-weight="700" letter-spacing="2">EXPERIENCE</text>
+    <text x="215" y="278" text-anchor="middle" fill="white" font-size="22" font-weight="700">React mobile web app</text>
+    <g fill="#d5e5e3" font-size="15"><text x="120" y="325">• Daily energy check-in</text><text x="120" y="358">• Seven-day forecast</text><text x="120" y="391">• What-if planner</text><text x="120" y="424">• Accessible visual states</text></g>
+
+    <rect x="495" y="175" width="310" height="280" rx="28" fill="#fff" stroke="#bdd1ce" stroke-width="2"/>
+    <text x="650" y="222" text-anchor="middle" fill="#168369" font-size="14" font-weight="700" letter-spacing="2">CORE LOGIC</text>
+    <text x="650" y="258" text-anchor="middle" fill="#123f4a" font-size="22" font-weight="700">Explainable scoring engine</text>
+    <g fill="#536d72" font-size="15"><text x="540" y="307">1. Start with self-reported reserve</text><text x="540" y="342">2. Subtract category-weighted tasks</text><text x="540" y="377">3. Add planned recovery</text><text x="540" y="412">4. Map reserve to forecast band</text></g>
+
+    <rect x="950" y="195" width="370" height="260" rx="28" fill="#e5f7f1" stroke="#8dc8b8" stroke-width="2"/>
+    <text x="1135" y="242" text-anchor="middle" fill="#168369" font-size="14" font-weight="700" letter-spacing="2">BUILD PHASE</text>
+    <text x="1135" y="278" text-anchor="middle" fill="#123f4a" font-size="22" font-weight="700">Supabase services</text>
+    <g fill="#41665e" font-size="15"><text x="995" y="325">• Authentication</text><text x="995" y="358">• Tasks and check-ins</text><text x="995" y="391">• Row-level security</text><text x="995" y="424">• Optional calendar import</text></g>
+
+    <rect x="495" y="510" width="310" height="78" rx="20" fill="#fff0e5" stroke="#efbd9f" stroke-width="2"/>
+    <text x="650" y="543" text-anchor="middle" fill="#8c4e2b" font-size="14" font-weight="700">PRIVACY BOUNDARY</text>
+    <text x="650" y="568" text-anchor="middle" fill="#6d5c52" font-size="14">Guidance, not medical diagnosis</text>
+  </g>
+</svg>
