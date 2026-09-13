@@ -39,6 +39,7 @@ The main stakeholders are students balancing study with work and personal respon
 - **Three Batteries:** separate mental, physical and social reserves prevent “tired” from becoming one vague score.
 - **Energy Weather:** Clear, Cloudy, Heavy and Storm conditions make a complex week understandable at a glance.
 - **Seven-Day Forecast:** projects the effect of tasks and recovery before the student commits to the plan.
+- **Energy Places:** lets students label recovery or study locations, click an OpenStreetMap map to drop pins, use browser location with explicit permission, and remove pins.
 - **What-If Planner:** previews the impact of splitting, moving or shortening flexible commitments.
 - **Explainable Warnings:** shows which commitments created the risk instead of outputting a mysterious score.
 - **15-Second Check-In:** lightweight self-reporting keeps the forecast personal without demanding journaling.
@@ -172,6 +173,7 @@ Every warning traces back to visible inputs—starting reserve, task demands and
 | Layer | Technology | Why it fits | Constraint and response |
 |---|---|---|---|
 | Frontend | Next.js, React 19, TypeScript | Fast responsive prototyping with reusable accessible components and production-ready server routes | Prototype is currently web-first; package as a PWA or move shared logic into React Native later. |
+| Mapping | React Leaflet + OpenStreetMap | Supports interactive labels, map-click pins and browser geolocation without a paid map key | Pins are session-only in this prototype; persistent sharing requires a consent-aware backend. |
 | Authentication | Auth.js + Google OAuth 2.0 | Gives students a familiar, secure sign-in without EnergyBuddy handling passwords | OAuth credentials stay in encrypted deployment environment variables. |
 | Interface | Tailwind CSS, Base UI, Lucide icons | Consistent visual system and keyboard-accessible primitives | Test colour contrast and screen-reader wording with real users. |
 | Prototype state | React state | Makes the demo deterministic, fast and deployable without accounts | Data resets on refresh; persistence belongs in the build phase. |

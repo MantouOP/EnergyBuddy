@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { signIn, signOut, useSession } from 'next-auth/react';
 import {
@@ -20,7 +21,9 @@ import {
   LayoutDashboard,
   Lightbulb,
   LogOut,
+  LocateFixed,
   MapPin,
+  MapPinned,
   MoonStar,
   MoveRight,
   PhoneOff,
@@ -40,6 +43,12 @@ import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import type { LocationPin } from '@/components/energy-map';
+
+const EnergyMap = dynamic(
+  () => import('@/components/energy-map').then((module) => module.EnergyMap),
+  { ssr: false, loading: () => <div className="map-loading">Loading map…</div> },
+);
 
 const baseForecast = [
   { day: 'Mon', date: '13', weather: 'Clear', icon: SunMedium, energy: 72 },
@@ -81,6 +90,11 @@ const restQuests = [
   { id: 'nap', title: 'Eyes-closed recharge', detail: 'Lie down, breathe slowly and rest for 20 minutes.', reward: '+18 rest points', icon: BedDouble },
 ];
 
+const initialLocationPins: LocationPin[] = [
+  { id: 'campus', label: 'Campus', lat: 3.1209, lng: 101.6538 },
+  { id: 'study-zone', label: 'Quiet study zone', lat: 3.1224, lng: 101.6553 },
+];
+
 export default function Home() {
   const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState('today');
@@ -93,6 +107,9 @@ export default function Home() {
   const [energyTasks, setEnergyTasks] = useState<EnergyTask[]>(initialTasks);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [taskDraft, setTaskDraft] = useState<TaskDraft>({ time: '', title: '', detail: '', cost: 10 });
+  const [locationPins, setLocationPins] = useState<LocationPin[]>(initialLocationPins);
+  const [pinLabel, setPinLabel] = useState('');
+  const [locationNote, setLocationNote] = useState('Name a place, then click the map to drop a pin.');
   const forecast = rebalanced ? balancedForecast : baseForecast;
   const rechargeResult = restMinutes === 20 ? 58 : restMinutes === 40 ? 75 : 84;
   const restScore = Math.round((completedQuests.length / restQuests.length) * 100);
@@ -109,7 +126,7 @@ export default function Home() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view');
-    if (view === 'today' || view === 'forecast' || view === 'balance' || view === 'rest') setActiveTab(view);
+    if (view === 'today' || view === 'forecast' || view === 'places' || view === 'balance' || view === 'rest') setActiveTab(view);
     if (params.get('balanced') === 'true') setRebalanced(true);
   }, []);
   /* oxlint-enable react/react-compiler */
@@ -181,6 +198,40 @@ export default function Home() {
     setEditingTaskId(null);
   };
 
+  const addLocationPin = (lat: number, lng: number) => {
+    const label = pinLabel.trim() || `Pinned place ${locationPins.length + 1}`;
+    setLocationPins((current) => [...current, { id: `pin-${Date.now()}`, label, lat, lng }]);
+    setPinLabel('');
+    setLocationNote(`${label} was added to your map.`);
+  };
+
+  const removeLocationPin = (id: string) => {
+    setLocationPins((current) => current.filter((pin) => pin.id !== id));
+    setLocationNote('Pin removed.');
+  };
+
+  const useMyLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationNote('This browser does not support location. You can still click the map to add a pin.');
+      return;
+    }
+
+    setLocationNote('Waiting for browser location permission…');
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const label = pinLabel.trim() || 'My current location';
+        setLocationPins((current) => [
+          ...current,
+          { id: `current-${Date.now()}`, label, lat: coords.latitude, lng: coords.longitude },
+        ]);
+        setPinLabel('');
+        setLocationNote(`${label} was added. Open its pin to see the coordinates.`);
+      },
+      () => setLocationNote('Location was unavailable or permission was declined. You can still click the map to add a pin.'),
+      { enableHighAccuracy: false, timeout: 10000, maximumAge: 60000 },
+    );
+  };
+
   if (status !== 'authenticated') {
     return (
       <main className="login-shell">
@@ -229,6 +280,7 @@ export default function Home() {
           <TabsList className="side-nav" aria-label="Main navigation">
             <TabsTrigger value="today"><LayoutDashboard /> Dashboard</TabsTrigger>
             <TabsTrigger value="forecast"><CloudRain /><span className="nav-long">Energy Forecast</span><span className="nav-short">Forecast</span></TabsTrigger>
+            <TabsTrigger value="places"><MapPinned /><span className="nav-long">Energy Places</span><span className="nav-short">Places</span></TabsTrigger>
             <TabsTrigger value="balance"><WandSparkles /><span className="nav-long">What-If Planner</span><span className="nav-short">What-If</span></TabsTrigger>
             <TabsTrigger value="rest"><BedDouble /><span className="nav-long">Proactive Rest</span><span className="nav-short">Rest</span></TabsTrigger>
           </TabsList>
@@ -358,6 +410,40 @@ export default function Home() {
               <div className="forecast-math"><div><span>Starting</span><b>61%</b></div><MoveRight /><div><span>Demand</span><b>85%</b></div><MoveRight /><div className="danger"><span>Ending</span><b>{rebalanced ? '31%' : '7%'}</b></div></div>
             </section>
             <div className="forecast-actions"><div className="legend"><span><i className="clear-dot" /> Clear 65–100%</span><span><i className="cloudy-dot" /> Cloudy 30–64%</span><span><i className="heavy-dot" /> Heavy 15–29%</span><span><i className="storm-dot" /> Storm below 15%</span></div><Button onClick={() => setActiveTab('balance')}>Open What-If Planner</Button></div>
+          </TabsContent>
+
+          <TabsContent value="places" className="view-panel">
+            <div className="view-title places-title"><span className="kicker">LOCATION &amp; RECOVERY</span><h2>Pin the places that shape your energy.</h2><p>Mark study zones, recovery spots, commutes or quiet places so your environment becomes part of the plan.</p></div>
+            <section className="places-grid">
+              <div className="panel map-panel">
+                <div className="panel-heading map-heading">
+                  <div><span className="kicker">YOUR ENERGY MAP</span><h2>Click anywhere to place a pin</h2></div>
+                  <button className="locate-button" type="button" onClick={useMyLocation}><LocateFixed /> Use my location</button>
+                </div>
+                <div className="map-label-row">
+                  <label htmlFor="pin-label">Pin label</label>
+                  <input id="pin-label" value={pinLabel} onChange={(event) => setPinLabel(event.target.value)} placeholder="e.g. Library, park, gym" />
+                  <span>Then click anywhere on the map.</span>
+                </div>
+                <EnergyMap pins={locationPins} onAddPin={addLocationPin} onRemovePin={removeLocationPin} />
+                <output className="location-note" aria-live="polite">{locationNote}</output>
+              </div>
+
+              <aside className="panel pin-list-panel">
+                <div><span className="kicker">SAVED THIS SESSION</span><h2>Your pinned places</h2></div>
+                <div className="pin-list">
+                  {locationPins.map((pin) => (
+                    <article className="pin-list-item" key={pin.id}>
+                      <span className="saved-pin-icon"><MapPin /></span>
+                      <div><strong>{pin.label}</strong><small>{pin.lat.toFixed(4)}, {pin.lng.toFixed(4)}</small></div>
+                      <button type="button" aria-label={`Remove ${pin.label}`} onClick={() => removeLocationPin(pin.id)}><Trash2 /></button>
+                    </article>
+                  ))}
+                  {locationPins.length === 0 && <p className="empty-pin-state">No pins yet. Add a label, then click the map.</p>}
+                </div>
+                <div className="map-privacy-note"><EyeOff /><p><strong>Private by default</strong><span>Pins stay in this browser session and are not saved to your profile or a database.</span></p></div>
+              </aside>
+            </section>
           </TabsContent>
 
           <TabsContent value="balance" className="view-panel">
