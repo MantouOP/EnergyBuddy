@@ -402,8 +402,6 @@ app/api/auth/[...nextauth]/route.ts Google authentication endpoint
 app/api/energy-assessment/route.ts  Protected AI assessment endpoint
 components/energy-map.tsx           Interactive Leaflet map
 docs/                                Ideation boards, flow and screenshots
-VIDEO-SCRIPT.md                      Timed 4½-minute presentation script
-SUBMISSION-CHECKLIST.md              Final hand-in checklist
 ```
 
 ## 14. Final submission checklist
@@ -418,7 +416,7 @@ SUBMISSION-CHECKLIST.md              Final hand-in checklist
 - [x] Responsive interactive prototype
 - [x] Technical feasibility and responsible-use boundaries
 - [ ] Replace the mentor consultation row with genuine evidence
-- [ ] Record the 3–5 minute video using [`VIDEO-SCRIPT.md`](VIDEO-SCRIPT.md)
+- [ ] Record the 3–5 minute presentation video
 - [ ] Upload the video as **Unlisted** and add its link at the top of this README
 - [ ] Test the repository, prototype, OAuth and video links while signed out
 
