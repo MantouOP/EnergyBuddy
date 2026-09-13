@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { type ChangeEvent, useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import Image from 'next/image';
 import { signIn, signOut, useSession } from 'next-auth/react';
@@ -149,6 +149,7 @@ const storageKeys = {
   rebalanced: 'energybuddy.rebalanced',
   ghostBlocks: 'energybuddy.ghost-blocks',
   locationPins: 'energybuddy.location-pins',
+  profileImage: 'energybuddy.profile-image',
 } as const;
 
 function readStoredValue<T>(storage: 'local' | 'session', key: string, fallback: T): T {
@@ -171,6 +172,39 @@ function loadEnergyTasks(): EnergyTask[] {
       ...task,
       icon: initialTasks.find((initial) => initial.id === task.id)?.icon ?? Brain,
     }));
+}
+
+function prepareProfileImage(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const image = new window.Image();
+
+    image.onload = () => {
+      const size = 256;
+      const scale = Math.max(size / image.naturalWidth, size / image.naturalHeight);
+      const width = image.naturalWidth * scale;
+      const height = image.naturalHeight * scale;
+      const canvas = document.createElement('canvas');
+      canvas.width = size;
+      canvas.height = size;
+      const context = canvas.getContext('2d');
+
+      if (!context) {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('This browser could not prepare the image.'));
+        return;
+      }
+
+      context.drawImage(image, (size - width) / 2, (size - height) / 2, width, height);
+      URL.revokeObjectURL(objectUrl);
+      resolve(canvas.toDataURL('image/webp', 0.84));
+    };
+    image.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error('That image could not be opened.'));
+    };
+    image.src = objectUrl;
+  });
 }
 
 export default function Home() {
@@ -199,6 +233,8 @@ export default function Home() {
   const [currentDate, setCurrentDate] = useState<Date | null>(null);
   const [supportVisible, setSupportVisible] = useState(false);
   const [profileVisible, setProfileVisible] = useState(false);
+  const [profileImage, setProfileImage] = useState<string | null>(() => readStoredValue('local', storageKeys.profileImage, null));
+  const [profileMessage, setProfileMessage] = useState('Choose a JPG, PNG or WebP image up to 5 MB.');
   const forecast = rebalanced ? balancedForecast : baseForecast;
   const rechargeResult = restMinutes === 20 ? 58 : restMinutes === 40 ? 75 : 84;
   const restScore = Math.round((completedQuests.length / restQuests.length) * 100);
@@ -259,6 +295,15 @@ export default function Home() {
       // Location pins remain in memory when session storage is unavailable.
     }
   }, [locationPins]);
+
+  useEffect(() => {
+    try {
+      if (profileImage) window.localStorage.setItem(storageKeys.profileImage, JSON.stringify(profileImage));
+      else window.localStorage.removeItem(storageKeys.profileImage);
+    } catch {
+      // The photo remains visible for this visit when browser storage is unavailable.
+    }
+  }, [profileImage]);
 
   useEffect(() => {
     if (!timerRunning || meetingSeconds <= 0) return;
@@ -450,6 +495,33 @@ export default function Home() {
     setGhostBlocks((current) => current.filter((block) => block.id !== id));
   };
 
+  const changeProfileImage = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setProfileMessage('Please choose a JPG, PNG or WebP image.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setProfileMessage('That image is larger than 5 MB. Please choose a smaller file.');
+      return;
+    }
+
+    setProfileMessage('Preparing your photo…');
+    try {
+      setProfileImage(await prepareProfileImage(file));
+      setProfileMessage('Profile photo updated and saved in this browser.');
+    } catch (error) {
+      setProfileMessage(error instanceof Error ? error.message : 'That image could not be used.');
+    }
+  };
+
+  const removeProfileImage = () => {
+    setProfileImage(null);
+    setProfileMessage('Profile photo removed. Your initials are shown again.');
+  };
+
   if (status !== 'authenticated') {
     return (
       <main className="login-shell">
@@ -524,12 +596,12 @@ export default function Home() {
               <div className="date-status"><strong>{currentTimeLabel}</strong><span><CalendarDays /> {currentDateLabel}</span></div>
               <div className="weather-status"><CurrentEnergyIcon /><span><strong>{currentEnergyWeather}</strong>{checkIn}% check-in</span></div>
               <button className="avatar" aria-label={`Open ${session.user?.name ?? session.user?.email ?? 'your'} profile`} onClick={() => setProfileVisible((current) => !current)}>
-                {(session.user?.name ?? session.user?.email ?? 'EB').split(/\s+|@/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()}
+                {profileImage ? <Image src={profileImage} alt="" width={48} height={48} unoptimized /> : (session.user?.name ?? session.user?.email ?? 'EB').split(/\s+|@/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()}
               </button>
             </div>
           </header>
 
-          {profileVisible && <aside className="utility-banner profile-banner"><span><UserRound /></span><div><strong>{session.user?.name ?? 'EnergyBuddy user'}</strong><small>{session.user?.email ?? 'Signed in with Google'}</small></div><button type="button" onClick={() => setProfileVisible(false)}>Close</button></aside>}
+          {profileVisible && <aside className="utility-banner profile-banner"><span className="profile-photo">{profileImage ? <Image src={profileImage} alt="Your profile" width={48} height={48} unoptimized /> : <UserRound />}</span><div><strong>{session.user?.name ?? 'EnergyBuddy user'}</strong><small>{session.user?.email ?? 'Signed in with Google'}</small><em aria-live="polite">{profileMessage}</em></div><div className="profile-photo-actions"><label><span>Change photo</span><input className="profile-upload-input" type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => void changeProfileImage(event)} /></label>{profileImage && <button type="button" onClick={removeProfileImage}>Remove</button>}<button type="button" onClick={() => setProfileVisible(false)}>Close</button></div></aside>}
           {supportVisible && <aside className="utility-banner support-banner"><span><HeartHandshake /></span><div><strong>You do not have to handle overwhelming stress alone.</strong><small>Contact someone you trust or your university support service. If you may be in immediate danger, contact local emergency services.</small></div><button type="button" onClick={() => setSupportVisible(false)}>Close</button></aside>}
 
           <TabsContent value="today" className="view-panel">

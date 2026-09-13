@@ -94,6 +94,7 @@ A student begins Thursday with **61% energy** but faces **85% demand**. The orig
 ### Today — an editable energy plan
 
 - Shows mental, physical and social battery summaries.
+- Lets the signed-in student choose, replace or remove a locally stored profile photo.
 - Captures a 15-second self-reported energy check-in.
 - Lets the student add, edit and remove commitments.
 - Supports positive energy costs and negative recovery values.
@@ -162,6 +163,7 @@ Ghost Mode creates non-negotiable no-contact blocks for decompression or focus. 
 |---|---|---|
 | Responsive dashboard and navigation | **Built** | Works across desktop and mobile layouts. |
 | Google sign-in | **Built** | Uses Auth.js and Google OAuth; deployment credentials remain server-side. |
+| Editable profile photo | **Built** | Validates, square-crops and compresses a chosen image locally, then remembers it in that browser. |
 | Editable energy plan | **Built** | Add, edit and remove tasks; capacity reacts immediately. |
 | AI assessment server route | **Built — key required** | Uses OpenAI Structured Outputs when `OPENAI_API_KEY` is configured. |
 | Forecast and What-If interaction | **Interactive prototype** | Demonstrates the complete 7% Storm to 31% Cloudy scenario. |
@@ -332,6 +334,7 @@ The student can edit every task cost. The AI route enriches the estimate; it doe
 EnergyBuddy is a workload-awareness prototype. It does not diagnose, treat or prevent a medical condition and should never replace professional support.
 
 - Energy percentages are planning estimates, not biological measurements.
+- Chosen profile photos are resized locally and stored in the student’s browser, not uploaded to EnergyBuddy.
 - Location is requested only after the student selects **Use my location**.
 - Prototype pins, plans and social blocks are not represented as permanent cloud records.
 - A production database must provide data export, deletion, row-level access control and minimum-data collection.
