@@ -77,6 +77,14 @@ const initialTasks = [
 
 type EnergyTask = (typeof initialTasks)[number];
 type TaskDraft = Pick<EnergyTask, 'time' | 'title' | 'detail' | 'cost'>;
+type EnergyAssessment = {
+  capacity: number;
+  confidence: 'low' | 'medium' | 'high';
+  summary: string;
+  factors: string[];
+  taskEstimates: { id: string; cost: number; reason: string }[];
+  model: string;
+};
 
 const batteries = [
   { label: 'Mental energy', value: 42, note: 'Protect focus', icon: Brain, tone: 'violet' },
@@ -110,6 +118,9 @@ export default function Home() {
   const [locationPins, setLocationPins] = useState<LocationPin[]>(initialLocationPins);
   const [pinLabel, setPinLabel] = useState('');
   const [locationNote, setLocationNote] = useState('Name a place, then click the map to drop a pin.');
+  const [aiAssessment, setAiAssessment] = useState<EnergyAssessment | null>(null);
+  const [assessmentError, setAssessmentError] = useState('');
+  const [isAssessing, setIsAssessing] = useState(false);
   const forecast = rebalanced ? balancedForecast : baseForecast;
   const rechargeResult = restMinutes === 20 ? 58 : restMinutes === 40 ? 75 : 84;
   const restScore = Math.round((completedQuests.length / restQuests.length) * 100);
@@ -117,9 +128,9 @@ export default function Home() {
     () => Math.round(forecast.reduce((sum, item) => sum + item.energy, 0) / forecast.length),
     [forecast],
   );
-  const planCapacity = useMemo(
-    () => Math.max(0, Math.min(100, 134 - energyTasks.reduce((sum, task) => sum + task.cost, 0))),
-    [energyTasks],
+  const planCapacity = aiAssessment?.capacity ?? Math.max(
+    0,
+    Math.min(100, checkIn + 72 - energyTasks.reduce((sum, task) => sum + task.cost, 0)),
   );
 
   /* oxlint-disable react/react-compiler -- URL parameters are applied after hydration for shareable prototype views. */
@@ -184,18 +195,66 @@ export default function Home() {
     const id = `task-${Date.now()}`;
     const task: EnergyTask = { id, time: '3:00', title: 'New commitment', detail: '30 min · flexible', cost: 10, icon: Brain };
     setEnergyTasks((current) => [...current, task]);
+    setAiAssessment(null);
     startEditingTask(task);
   };
 
   const saveTask = () => {
     if (!editingTaskId || !taskDraft.title.trim() || !taskDraft.time.trim()) return;
     setEnergyTasks((current) => current.map((task) => task.id === editingTaskId ? { ...task, ...taskDraft, title: taskDraft.title.trim(), detail: taskDraft.detail.trim() } : task));
+    setAiAssessment(null);
+    setAssessmentError('');
     setEditingTaskId(null);
   };
 
   const removeTask = (id: string) => {
     setEnergyTasks((current) => current.filter((task) => task.id !== id));
+    setAiAssessment(null);
+    setAssessmentError('');
     setEditingTaskId(null);
+  };
+
+  const runEnergyAssessment = async () => {
+    setIsAssessing(true);
+    setAssessmentError('');
+
+    try {
+      const response = await fetch('/api/energy-assessment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          checkIn,
+          completedRestMinutes: completedQuests.length * 20 + 15,
+          tasks: energyTasks.map((task) => ({
+            id: task.id,
+            time: task.time,
+            title: task.title,
+            detail: task.detail,
+            currentCost: task.cost,
+          })),
+        }),
+      });
+      const result = await response.json() as {
+        assessment?: Omit<EnergyAssessment, 'model'>;
+        error?: string;
+        model?: string;
+      };
+
+      if (!response.ok || !result.assessment || !result.model) {
+        throw new Error(result.error ?? 'The assessment could not be completed.');
+      }
+
+      const assessment = { ...result.assessment, model: result.model };
+      setAiAssessment(assessment);
+      setEnergyTasks((current) => current.map((task) => {
+        const estimate = assessment.taskEstimates.find((item) => item.id === task.id);
+        return estimate ? { ...task, cost: estimate.cost } : task;
+      }));
+    } catch (error) {
+      setAssessmentError(error instanceof Error ? error.message : 'The assessment could not be completed.');
+    } finally {
+      setIsAssessing(false);
+    }
   };
 
   const addLocationPin = (lat: number, lng: number) => {
@@ -347,7 +406,7 @@ export default function Home() {
               </section>
 
               <section className="panel load-panel">
-                <div className="panel-heading"><div><span className="kicker">TODAY</span><h2>Your energy plan</h2></div><div className="task-heading-actions"><span className="load-chip">{planCapacity}% capacity</span><button className="add-task-button" type="button" onClick={addTask}><Plus /> Add</button></div></div>
+                <div className="panel-heading"><div><span className="kicker">TODAY</span><h2>Your energy plan</h2></div><div className="task-heading-actions"><span className={aiAssessment ? 'load-chip ai-capacity-chip' : 'load-chip'}>{planCapacity}% {aiAssessment ? 'AI estimate' : 'capacity'}</span><button className="ai-assess-button" type="button" onClick={() => void runEnergyAssessment()} disabled={isAssessing || energyTasks.length === 0}><WandSparkles /> {isAssessing ? 'Analysing…' : 'AI assess'}</button><button className="add-task-button" type="button" onClick={addTask}><Plus /> Add</button></div></div>
                 <div className="task-list">
                   {energyTasks.map((task) => {
                     const Icon = task.icon;
@@ -374,6 +433,14 @@ export default function Home() {
                   })}
                   {energyTasks.length === 0 && <div className="empty-task-state"><p>Your plan is empty.</p><button type="button" onClick={addTask}><Plus /> Add your first commitment</button></div>}
                 </div>
+                {assessmentError && <output className="ai-assessment-error" aria-live="polite">{assessmentError}</output>}
+                {aiAssessment && (
+                  <section className="ai-assessment-result" aria-live="polite">
+                    <div><span className="ai-result-icon"><WandSparkles /></span><p><strong>AI energy assessment</strong><span>{aiAssessment.summary}</span></p><small>{aiAssessment.confidence} confidence</small></div>
+                    <ul>{aiAssessment.factors.map((factor) => <li key={factor}>{factor}</li>)}</ul>
+                    <small className="ai-model-note">Estimated with {aiAssessment.model}. Guidance only—not a medical or objective energy measurement.</small>
+                  </section>
+                )}
               </section>
 
               <section className="panel storm-panel">
@@ -384,7 +451,7 @@ export default function Home() {
 
               <section className="panel checkin-panel">
                 <div className="panel-heading"><div><span className="kicker">15-SECOND CHECK-IN</span><h2>How charged do you feel?</h2></div><strong className="checkin-number">{checkIn}%</strong></div>
-                <Slider value={[checkIn]} onValueChange={(value) => { setCheckIn(typeof value === 'number' ? value : value[0]); setSaved(false); }} aria-label="Current energy level" />
+                <Slider value={[checkIn]} onValueChange={(value) => { setCheckIn(typeof value === 'number' ? value : value[0]); setSaved(false); setAiAssessment(null); setAssessmentError(''); }} aria-label="Current energy level" />
                 <div className="slider-labels"><span>Running low</span><span>Fully charged</span></div>
                 <Button variant={saved ? 'secondary' : 'default'} onClick={() => setSaved(true)}>{saved ? <><Check /> Saved</> : 'Save check-in'}</Button>
               </section>

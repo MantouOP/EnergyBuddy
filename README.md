@@ -44,6 +44,7 @@ The main stakeholders are students balancing study with work and personal respon
 - **Explainable Warnings:** shows which commitments created the risk instead of outputting a mysterious score.
 - **15-Second Check-In:** lightweight self-reporting keeps the forecast personal without demanding journaling.
 - **Editable Energy Plan:** students can add, revise or remove commitments and see the capacity estimate respond to each energy cost.
+- **AI Energy Assessment:** securely sends the current check-in and plan to a server-side OpenAI Responses API route, then updates every task cost and explains the estimated remaining capacity and confidence.
 - **Rest Quests:** short, specific recovery tasks make deliberate rest measurable instead of treating it as leftover time.
 - **Recharge Curve:** compares rest durations and shows an explainable estimate of how focus may recover.
 - **Environment Shift:** prototypes step/location confirmation while clearly separating the demo from future permission-based mobile integrations.
@@ -173,6 +174,7 @@ Every warning traces back to visible inputs—starting reserve, task demands and
 | Layer | Technology | Why it fits | Constraint and response |
 |---|---|---|---|
 | Frontend | Next.js, React 19, TypeScript | Fast responsive prototyping with reusable accessible components and production-ready server routes | Prototype is currently web-first; package as a PWA or move shared logic into React Native later. |
+| AI assessment | OpenAI Responses API + GPT-5.4 Mini Structured Outputs | Returns bounded, task-level estimates with a short explanation and confidence level | Requires `OPENAI_API_KEY`; results are workload guidance rather than an objective or medical measurement. |
 | Mapping | React Leaflet + OpenStreetMap | Supports interactive labels, map-click pins and browser geolocation without a paid map key | Pins are session-only in this prototype; persistent sharing requires a consent-aware backend. |
 | Authentication | Auth.js + Google OAuth 2.0 | Gives students a familiar, secure sign-in without EnergyBuddy handling passwords | OAuth credentials stay in encrypted deployment environment variables. |
 | Interface | Tailwind CSS, Base UI, Lucide icons | Consistent visual system and keyboard-accessible primitives | Test colour contrast and screen-reader wording with real users. |
@@ -183,7 +185,7 @@ Every warning traces back to visible inputs—starting reserve, task demands and
 
 ### Explainable forecast model
 
-The MVP deliberately uses a transparent weighted model instead of claiming medical prediction:
+The MVP keeps a transparent weighted model as its immediate baseline and offers an optional AI assessment for richer task-level estimates:
 
 ```text
 starting reserve = weighted daily check-in + previous-day recovery
@@ -198,7 +200,7 @@ Forecast bands:
 - **Heavy:** 15–29%
 - **Storm:** below 15%
 
-Weights begin with conservative defaults and can later adapt from the student's “estimated vs actual” feedback. The score measures workload strain only and must not be described as detecting or diagnosing a medical condition.
+When the student selects **AI assess**, a signed-in-only server route sends the self-reported check-in, completed recovery minutes and bounded task fields to the OpenAI Responses API. Structured Outputs return one cost per task, the estimated remaining capacity, confidence and up to three contributing factors. The API key never reaches the browser, responses are not stored by the API request, and task text is treated as untrusted data. Weights begin with conservative defaults and can later adapt from the student's “estimated vs actual” feedback. Every score measures workload strain only and must not be described as detecting or diagnosing a medical condition.
 
 ### Build plan and scope
 
@@ -248,6 +250,8 @@ The same model can expand from individual students to opt-in university wellbein
 ## 7. Run Locally
 
 Requirements: Node.js 22.13 or newer.
+
+Copy `.env.example` to `.env.local`, then provide Google OAuth credentials and an OpenAI API key. `OPENAI_MODEL` is optional and defaults to `gpt-5.4-mini`.
 
 ```bash
 npm install
