@@ -32,7 +32,13 @@ This script stays under the five-minute limit. Rehearse once with a timer and ke
 
 “Awareness alone is not enough. What-If Mode keeps the essential lab and paid shift, splits the assignment, protects lunch and moves flexible revision. The student can inspect every change before accepting it. Thursday then improves from a seven-percent Storm reserve to thirty-one percent and Cloudy—without removing an essential commitment.”
 
-## 2:55–3:55 — Proactive Rest
+## 2:55–3:30 — Social Battery
+
+**Action:** Open **Social Battery**, generate one agenda, select its timer, then add a Ghost Mode block.
+
+“Group work creates a hidden form of burnout. Social Battery totals every meeting and presentation, then shows the reserve left afterward. The aggregator creates a focused thirty-minute agenda, and its hard-stop timer warns the group when discussion is consuming too much energy. Ghost Mode protects non-negotiable no-contact time and immediately improves the projected social reserve.”
+
+## 3:30–4:10 — Proactive Rest
 
 **Action:** Open **Proactive Rest**. Complete a quest, select **40 min**, then start the environment check-in.
 
@@ -40,15 +46,15 @@ This script stays under the five-minute limit. Rehearse once with a timer and ke
 
 “The Recharge Curve gives students a logical reason to stop. In this scenario, forty minutes of rest may raise estimated evening coding focus from thirty to seventy-five percent. The number is transparent and adjustable, not medical advice.”
 
-“The environment check-in is a prototype simulation. A future mobile build could use HealthKit, Google Fit, steps or location—with permission—to confirm that the student genuinely left the study zone.”
+“The environment check-in is a prototype simulation. A future mobile build could use steps or permission-based location to confirm that the student genuinely left the study zone.”
 
-## 3:55–4:20 — Novelty and feasibility
+## 4:10–4:25 — Novelty and feasibility
 
 **Visual:** Keep the Proactive Rest dashboard visible.
 
 “Todo lists organise work, while self-care apps suggest recovery. EnergyBuddy connects both: it predicts energy weather, explains overload, tests schedule changes and rewards deliberate rest. The web prototype uses React and transparent rules; secure storage and permission-based mobile sensors are clearly separated into the build phase.”
 
-## 4:20–4:30 — Close
+## 4:25–4:30 — Close
 
 **Visual:** Return to the updated forecast or Rest KPI.
 
@@ -58,7 +64,7 @@ This script stays under the five-minute limit. Rehearse once with a timer and ke
 
 - Record at 1080p with browser zoom around 100%.
 - Close notifications and unrelated tabs.
-- Use the exact order: Login → Today → Forecast → What-If → Apply → Proactive Rest.
+- Use the exact order: Login → Today → Forecast → What-If → Apply → Social Battery → Proactive Rest.
 - Keep the final cut between 3:00 and 5:00.
 - Upload as **Unlisted**, not Private.
 - Test the video link while signed out before submission.

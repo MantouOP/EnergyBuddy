@@ -45,6 +45,9 @@ The main stakeholders are students balancing study with work and personal respon
 - **15-Second Check-In:** lightweight self-reporting keeps the forecast personal without demanding journaling.
 - **Editable Energy Plan:** students can add, revise or remove commitments and see the capacity estimate respond to each energy cost.
 - **AI Energy Assessment:** securely sends the current check-in and plan to a server-side OpenAI Responses API route, then updates every task cost and explains the estimated remaining capacity and confidence.
+- **Social Battery Meter:** converts meetings, presentations and protected quiet blocks into a dedicated daily social reserve.
+- **Meeting Aggregator + Hard-Stop Timer:** groups today’s social commitments, generates a focused 30-minute agenda, and runs a real start/pause/reset countdown.
+- **Ghost Mode Scheduling:** adds or removes non-negotiable no-contact blocks and immediately shows their protective effect on social capacity.
 - **Rest Quests:** short, specific recovery tasks make deliberate rest measurable instead of treating it as leftover time.
 - **Recharge Curve:** compares rest durations and shows an explainable estimate of how focus may recover.
 - **Environment Shift:** prototypes step/location confirmation while clearly separating the demo from future permission-based mobile integrations.
@@ -114,7 +117,7 @@ Useful questions for the consultation:
 
 ## 3. Design & Prototype
 
-**UI Prototype:** [Open the interactive EnergyBuddy prototype](https://enerybuddy-prototype.roberhwk.chatgpt.site)
+**UI Prototype:** [Open the interactive EnergyBuddy prototype](https://energybuddy.vercel.app)
 
 ### Core flow covered
 
@@ -122,7 +125,8 @@ Useful questions for the consultation:
 2. **Today:** understand current weather, the three batteries and today's energy costs.
 3. **Forecast:** identify Thursday's storm and see why demand exceeds projected reserve.
 4. **What-If:** compare the current and balanced schedules side by side, then raise Thursday's reserve from 7% to 31%.
-5. **Proactive Rest:** complete Rest Quests, compare 20/40/60-minute recharge scenarios and simulate an environment-change check-in.
+5. **Social Battery:** review group-work load, generate meeting agendas, enforce a 30-minute timer and protect Ghost Mode blocks.
+6. **Proactive Rest:** complete Rest Quests, compare 20/40/60-minute recharge scenarios and simulate an environment-change check-in.
 
 ### Key screens
 
@@ -176,6 +180,7 @@ Every warning traces back to visible inputs—starting reserve, task demands and
 | Frontend | Next.js, React 19, TypeScript | Fast responsive prototyping with reusable accessible components and production-ready server routes | Prototype is currently web-first; package as a PWA or move shared logic into React Native later. |
 | AI assessment | OpenAI Responses API + GPT-5.4 Mini Structured Outputs | Returns bounded, task-level estimates with a short explanation and confidence level | Requires `OPENAI_API_KEY`; results are workload guidance rather than an objective or medical measurement. |
 | Mapping | React Leaflet + OpenStreetMap | Supports interactive labels, map-click pins and browser geolocation without a paid map key | Pins are session-only in this prototype; persistent sharing requires a consent-aware backend. |
+| Social scheduling | Next.js PWA-ready interactions; Google Calendar API planned | Demonstrates meeting aggregation, hard-stop timing and protected availability before requesting calendar access | Current blocks are prototype state; a production sync needs a separate, explicit Calendar OAuth scope and conflict controls. |
 | Authentication | Auth.js + Google OAuth 2.0 | Gives students a familiar, secure sign-in without EnergyBuddy handling passwords | OAuth credentials stay in encrypted deployment environment variables. |
 | Interface | Tailwind CSS, Base UI, Lucide icons | Consistent visual system and keyboard-accessible primitives | Test colour contrast and screen-reader wording with real users. |
 | Prototype state | React state | Makes the demo deterministic, fast and deployable without accounts | Data resets on refresh; persistence belongs in the build phase. |
@@ -210,6 +215,7 @@ When the student selects **AI assess**, a signed-in-only server route sends the 
 | P0 | Tasks with energy cost | Students can add, categorise and estimate a commitment. |
 | P0 | Seven-day forecast | Each day displays a reserve, weather band and explainable cause. |
 | P0 | What-If planner | Moving, splitting or adding recovery recalculates the forecast before saving. |
+| P0 | Social Battery | Meeting minutes reduce a dedicated reserve; agendas, a hard-stop timer and Ghost Mode blocks are interactive. |
 | P0 | Rest Quests + Recharge Curve | Students can complete deliberate recovery tasks and compare the estimated return from different rest durations. |
 | P1 | Persistence | Authenticated users can securely save and retrieve their own plans. |
 | P1 | Notifications | One useful warning appears before a projected storm, with opt-out controls. |
@@ -222,7 +228,7 @@ When the student selects **AI assess**, a signed-in-only server route sends the 
 - **Logic/data:** one member can own the scoring model, seed scenarios and later persistence.
 - **Research/testing:** one member can run five short student usability tests and document mentor feedback.
 - **Pitch/documentation:** one member can maintain this README, rehearse the demo and verify every public link.
-- **Cost:** the prototype uses free/open-source libraries and can be demonstrated without paid APIs.
+- **Cost:** the interface and map use free/open-source libraries; AI assessment consumes a small paid API request only when the student explicitly selects it.
 
 ## 6. Impact
 

@@ -8,9 +8,11 @@ import {
   BedDouble,
   Brain,
   CalendarDays,
+  CalendarPlus,
   Check,
   ChevronRight,
   CircleHelp,
+  Clock3,
   CloudRain,
   Coffee,
   Dumbbell,
@@ -24,17 +26,23 @@ import {
   LocateFixed,
   MapPin,
   MapPinned,
+  MicOff,
   MoonStar,
   MoveRight,
   PhoneOff,
   Pencil,
+  Pause,
+  Play,
   Plus,
+  RotateCcw,
   Settings,
+  Shield,
   SunMedium,
   TimerReset,
   TrendingUp,
   Trash2,
   UserRound,
+  UsersRound,
   WandSparkles,
   Zap,
 } from 'lucide-react';
@@ -98,6 +106,32 @@ const restQuests = [
   { id: 'nap', title: 'Eyes-closed recharge', detail: 'Lie down, breathe slowly and rest for 20 minutes.', reward: '+18 rest points', icon: BedDouble },
 ];
 
+type SocialMeeting = {
+  id: string;
+  time: string;
+  title: string;
+  format: string;
+  minutes: number;
+};
+
+type GhostBlock = {
+  id: string;
+  label: string;
+  time: string;
+};
+
+const socialMeetings: SocialMeeting[] = [
+  { id: 'capstone', time: '10:00 AM', title: 'Capstone group sync', format: '4 people · online', minutes: 45 },
+  { id: 'committee', time: '2:00 PM', title: 'Society committee', format: '8 people · campus', minutes: 30 },
+  { id: 'presentation', time: '5:30 PM', title: 'Project presentation', format: 'presenting · seminar room', minutes: 60 },
+];
+
+const ghostBlockPresets = [
+  { label: 'Post-meeting decompression', time: '3:30–4:30 PM' },
+  { label: 'No-contact focus window', time: '7:00–9:00 PM' },
+  { label: 'Morning quiet start', time: '8:00–9:00 AM' },
+];
+
 const initialLocationPins: LocationPin[] = [
   { id: 'campus', label: 'Campus', lat: 3.1209, lng: 101.6538 },
   { id: 'study-zone', label: 'Quiet study zone', lat: 3.1224, lng: 101.6553 },
@@ -121,6 +155,13 @@ export default function Home() {
   const [aiAssessment, setAiAssessment] = useState<EnergyAssessment | null>(null);
   const [assessmentError, setAssessmentError] = useState('');
   const [isAssessing, setIsAssessing] = useState(false);
+  const [meetingAgendas, setMeetingAgendas] = useState<Record<string, string[]>>({});
+  const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null);
+  const [meetingSeconds, setMeetingSeconds] = useState(30 * 60);
+  const [timerRunning, setTimerRunning] = useState(false);
+  const [ghostBlocks, setGhostBlocks] = useState<GhostBlock[]>([
+    { id: 'ghost-0', ...ghostBlockPresets[0] },
+  ]);
   const forecast = rebalanced ? balancedForecast : baseForecast;
   const rechargeResult = restMinutes === 20 ? 58 : restMinutes === 40 ? 75 : 84;
   const restScore = Math.round((completedQuests.length / restQuests.length) * 100);
@@ -132,15 +173,25 @@ export default function Home() {
     0,
     Math.min(100, checkIn + 72 - energyTasks.reduce((sum, task) => sum + task.cost, 0)),
   );
+  const socialMinutes = socialMeetings.reduce((sum, meeting) => sum + meeting.minutes, 0);
+  const socialBattery = Math.max(0, Math.min(100, 100 - Math.round(socialMinutes * 0.45) + ghostBlocks.length * 10));
+  const activeMeeting = socialMeetings.find((meeting) => meeting.id === activeMeetingId);
+  const timerDisplay = `${String(Math.floor(meetingSeconds / 60)).padStart(2, '0')}:${String(meetingSeconds % 60).padStart(2, '0')}`;
 
   /* oxlint-disable react/react-compiler -- URL parameters are applied after hydration for shareable prototype views. */
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view');
-    if (view === 'today' || view === 'forecast' || view === 'places' || view === 'balance' || view === 'rest') setActiveTab(view);
+    if (view === 'today' || view === 'forecast' || view === 'places' || view === 'balance' || view === 'social' || view === 'rest') setActiveTab(view);
     if (params.get('balanced') === 'true') setRebalanced(true);
   }, []);
   /* oxlint-enable react/react-compiler */
+
+  useEffect(() => {
+    if (!timerRunning || meetingSeconds <= 0) return;
+    const timer = window.setTimeout(() => setMeetingSeconds((current) => Math.max(0, current - 1)), 1000);
+    return () => window.clearTimeout(timer);
+  }, [meetingSeconds, timerRunning]);
 
   useEffect(() => {
     type ModelContext = {
@@ -291,6 +342,41 @@ export default function Home() {
     );
   };
 
+  const generateMeetingAgenda = (meeting: SocialMeeting) => {
+    setMeetingAgendas((current) => ({
+      ...current,
+      [meeting.id]: [
+        `2 min — agree on the outcome for ${meeting.title}`,
+        '18 min — resolve the three highest-priority decisions',
+        '10 min — assign owners, deadlines and the next update',
+      ],
+    }));
+  };
+
+  const startMeetingTimer = (meetingId: string) => {
+    if (activeMeetingId !== meetingId || meetingSeconds === 0) {
+      setActiveMeetingId(meetingId);
+      setMeetingSeconds(30 * 60);
+      setTimerRunning(true);
+      return;
+    }
+    setTimerRunning((current) => !current);
+  };
+
+  const resetMeetingTimer = () => {
+    setMeetingSeconds(30 * 60);
+    setTimerRunning(false);
+  };
+
+  const addGhostBlock = () => {
+    const preset = ghostBlockPresets[ghostBlocks.length % ghostBlockPresets.length];
+    setGhostBlocks((current) => [...current, { id: `ghost-${Date.now()}`, ...preset }]);
+  };
+
+  const removeGhostBlock = (id: string) => {
+    setGhostBlocks((current) => current.filter((block) => block.id !== id));
+  };
+
   if (status !== 'authenticated') {
     return (
       <main className="login-shell">
@@ -341,6 +427,7 @@ export default function Home() {
             <TabsTrigger value="forecast"><CloudRain /><span className="nav-long">Energy Forecast</span><span className="nav-short">Forecast</span></TabsTrigger>
             <TabsTrigger value="places"><MapPinned /><span className="nav-long">Energy Places</span><span className="nav-short">Places</span></TabsTrigger>
             <TabsTrigger value="balance"><WandSparkles /><span className="nav-long">What-If Planner</span><span className="nav-short">What-If</span></TabsTrigger>
+            <TabsTrigger value="social"><UsersRound /><span className="nav-long">Social Battery</span><span className="nav-short">Social</span></TabsTrigger>
             <TabsTrigger value="rest"><BedDouble /><span className="nav-long">Proactive Rest</span><span className="nav-short">Rest</span></TabsTrigger>
           </TabsList>
 
@@ -530,6 +617,61 @@ export default function Home() {
             </section>
             <section className="apply-panel"><div><span className="apply-icon"><MoonStar /></span><p><b>+24% safer reserve</b><small>No essential commitments removed</small></p></div><Button onClick={() => setRebalanced(true)} disabled={rebalanced}>{rebalanced ? <><Check /> Plan applied</> : 'Apply balanced plan'}</Button></section>
             {rebalanced && <output className="success-note"><Check /> Thursday changed from Storm to Cloudy. Your forecast is updated.</output>}
+          </TabsContent>
+
+          <TabsContent value="social" className="view-panel">
+            <div className="view-title social-title"><span className="kicker">SOCIAL BATTERY</span><h2>Protect the energy that meetings consume.</h2><p>See the hidden cost of group work, keep discussions short, and reserve non-negotiable time with no calls, messages or meetings.</p></div>
+
+            <section className="social-summary-grid" aria-label="Social energy summary">
+              <article className="panel social-meter-panel">
+                <div className="social-meter-heading"><span className="social-meter-icon"><UsersRound /></span><div><small>Social battery after today</small><strong>{socialBattery}%</strong></div><span className={socialBattery < 50 ? 'social-status low' : 'social-status'}>{socialBattery < 50 ? 'Running low' : 'Protected'}</span></div>
+                <Progress value={socialBattery} aria-label={`Projected social battery ${socialBattery}%`} />
+                <div className="social-meter-stats"><span><b>{socialMinutes} min</b> talking or presenting</span><span><b>{socialMeetings.length}</b> group commitments</span><span><b>{ghostBlocks.length}</b> protected blocks</span></div>
+                {socialBattery < 50 && <p className="social-warning"><Zap /> Today&apos;s group load may exceed your comfortable social reserve. Protect a quiet block after the final meeting.</p>}
+              </article>
+
+              <article className={`panel meeting-timer-panel ${meetingSeconds <= 300 ? 'timer-warning' : ''}`}>
+                <div className="panel-heading"><div><span className="kicker">HARD-STOP TIMER</span><h2>{activeMeeting?.title ?? 'Choose a meeting'}</h2></div><Clock3 /></div>
+                <strong className="meeting-countdown">{timerDisplay}</strong>
+                <p>{meetingSeconds === 0 ? 'Time is up — the group battery needs a reset.' : meetingSeconds <= 300 ? 'Wrap up decisions and assign the remaining actions.' : 'A clear 30-minute boundary keeps discussion focused.'}</p>
+                <div className="timer-actions"><Button disabled={!activeMeeting} onClick={() => activeMeeting && startMeetingTimer(activeMeeting.id)}>{timerRunning && meetingSeconds > 0 ? <><Pause /> Pause</> : <><Play /> {meetingSeconds === 0 ? 'Start again' : 'Start timer'}</>}</Button><button type="button" onClick={resetMeetingTimer} disabled={!activeMeeting}><RotateCcw /> Reset</button></div>
+              </article>
+            </section>
+
+            <section className="social-workspace-grid">
+              <div className="panel meeting-aggregator-panel">
+                <div className="panel-heading"><div><span className="kicker">MEETING AGGREGATOR</span><h2>Today&apos;s social load</h2></div><span className="meeting-total">{socialMinutes} minutes</span></div>
+                <div className="social-meeting-list">
+                  {socialMeetings.map((meeting) => {
+                    const agenda = meetingAgendas[meeting.id];
+                    const selected = activeMeetingId === meeting.id;
+                    return (
+                      <article className={selected ? 'social-meeting selected' : 'social-meeting'} key={meeting.id}>
+                        <time>{meeting.time}</time>
+                        <span className="social-meeting-icon"><UsersRound /></span>
+                        <div className="social-meeting-copy"><strong>{meeting.title}</strong><small>{meeting.format}</small></div>
+                        <span className="meeting-duration">{meeting.minutes} min</span>
+                        <div className="meeting-actions"><button type="button" onClick={() => generateMeetingAgenda(meeting)}><WandSparkles /> {agenda ? 'Agenda ready' : 'Make agenda'}</button><button type="button" onClick={() => startMeetingTimer(meeting.id)}><Clock3 /> {selected ? 'Open timer' : 'Time meeting'}</button></div>
+                        {agenda && <ol className="meeting-agenda">{agenda.map((item) => <li key={item}>{item}</li>)}</ol>}
+                      </article>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <aside className="panel ghost-mode-panel">
+                <div className="ghost-mode-heading"><span className="ghost-mode-icon"><MicOff /></span><div><span className="kicker">GHOST MODE</span><h2>No-social protection</h2></div></div>
+                <p>These blocks are treated as unavailable, so meetings cannot consume your recovery or focus time.</p>
+                <div className="ghost-block-list">
+                  {ghostBlocks.map((block) => (
+                    <article key={block.id}><span><Shield /></span><div><strong>{block.label}</strong><small>{block.time}</small></div><button type="button" aria-label={`Remove ${block.label}`} onClick={() => removeGhostBlock(block.id)}><Trash2 /></button></article>
+                  ))}
+                  {ghostBlocks.length === 0 && <div className="ghost-empty"><MicOff /><span>No quiet time protected yet.</span></div>}
+                </div>
+                <button className="add-ghost-button" type="button" onClick={addGhostBlock} disabled={ghostBlocks.length >= 3}><CalendarPlus /> {ghostBlocks.length >= 3 ? 'Day fully protected' : 'Protect another block'}</button>
+                <small className="calendar-prototype-note">Prototype schedule only · Google Calendar sync requires separate calendar permission.</small>
+              </aside>
+            </section>
           </TabsContent>
 
           <TabsContent value="rest" className="view-panel">
