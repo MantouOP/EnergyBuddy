@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import {
+  BedDouble,
   Brain,
   CalendarDays,
   Check,
@@ -11,21 +12,31 @@ import {
   CloudRain,
   Coffee,
   Dumbbell,
+  EyeOff,
+  Footprints,
   Gauge,
   HeartHandshake,
   LayoutDashboard,
   Lightbulb,
+  LockKeyhole,
   LogOut,
+  Mail,
+  MapPin,
   MoonStar,
   MoveRight,
+  PhoneOff,
   Settings,
   SunMedium,
+  TimerReset,
+  TrendingUp,
   UserRound,
   WandSparkles,
   Zap,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -61,12 +72,25 @@ const batteries = [
   { label: 'Social energy', value: 76, note: 'Good reserve', icon: HeartHandshake, tone: 'mint' },
 ];
 
+const restQuests = [
+  { id: 'walk', title: 'Step outside', detail: 'Walk away from your study zone for 15 minutes.', reward: '+12 rest points', icon: Footprints },
+  { id: 'offline', title: 'No-phone reset', detail: 'Leave your phone behind and do nothing for 20 minutes.', reward: '+16 rest points', icon: PhoneOff },
+  { id: 'nap', title: 'Eyes-closed recharge', detail: 'Lie down, breathe slowly and rest for 20 minutes.', reward: '+18 rest points', icon: BedDouble },
+];
+
 export default function Home() {
+  const [signedIn, setSignedIn] = useState(false);
+  const [authNote, setAuthNote] = useState('');
   const [activeTab, setActiveTab] = useState('today');
   const [rebalanced, setRebalanced] = useState(false);
   const [checkIn, setCheckIn] = useState(62);
   const [saved, setSaved] = useState(false);
+  const [completedQuests, setCompletedQuests] = useState<string[]>(['walk']);
+  const [restMinutes, setRestMinutes] = useState(40);
+  const [environmentChecked, setEnvironmentChecked] = useState(false);
   const forecast = rebalanced ? balancedForecast : baseForecast;
+  const rechargeResult = restMinutes === 20 ? 58 : restMinutes === 40 ? 75 : 84;
+  const restScore = Math.round((completedQuests.length / restQuests.length) * 100);
   const averageEnergy = useMemo(
     () => Math.round(forecast.reduce((sum, item) => sum + item.energy, 0) / forecast.length),
     [forecast],
@@ -76,7 +100,7 @@ export default function Home() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const view = params.get('view');
-    if (view === 'today' || view === 'forecast' || view === 'balance') setActiveTab(view);
+    if (view === 'today' || view === 'forecast' || view === 'balance' || view === 'rest') setActiveTab(view);
     if (params.get('balanced') === 'true') setRebalanced(true);
   }, []);
   /* oxlint-enable react/react-compiler */
@@ -121,6 +145,47 @@ export default function Home() {
     return () => lifecycle.abort();
   }, []);
 
+  const toggleQuest = (id: string) => {
+    setCompletedQuests((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  };
+
+  if (!signedIn) {
+    return (
+      <main className="login-shell">
+        <section className="login-card" aria-label="EnergyBuddy sign in">
+          <div className="login-visual">
+            <Image className="login-logo" src="/energybuddy-logo.png" alt="EnergyBuddy smiling battery logo" width={300} height={300} priority />
+            <div>
+              <span className="kicker">REST-FIRST PLANNING</span>
+              <h1>Protect your energy before it runs out.</h1>
+              <p>Forecast overload, schedule real recovery and make rest count as progress.</p>
+            </div>
+            <div className="login-benefit"><TimerReset /><span><b>Tonight&apos;s focus</b><small>30% → 75% after a 40-minute reset</small></span></div>
+          </div>
+
+          <form className="login-form" onSubmit={(event) => { event.preventDefault(); setSignedIn(true); }}>
+            <div className="login-mobile-brand"><span className="brand-logo-crop" aria-hidden="true"><Image src="/energybuddy-logo.png" alt="" width={81} height={81} /></span><strong><span>Energy</span><span>Buddy</span></strong></div>
+            <span className="kicker">WELCOME BACK</span>
+            <h2>Sign in to EnergyBuddy</h2>
+            <p>Pick up your forecast and today&apos;s recovery plan.</p>
+
+            <label htmlFor="email">Email address</label>
+            <div className="auth-input"><Mail /><Input id="email" name="email" type="email" placeholder="alex@university.edu" autoComplete="email" required /></div>
+            <label htmlFor="password">Password</label>
+            <div className="auth-input"><LockKeyhole /><Input id="password" name="password" type="password" placeholder="Enter your password" autoComplete="current-password" minLength={6} required /></div>
+
+            <div className="auth-options"><label htmlFor="remember"><Checkbox id="remember" /> Remember me</label><button type="button" onClick={() => setAuthNote('Password reset is not connected in this prototype.')}>Forgot password?</button></div>
+            <Button className="sign-in-button" type="submit">Sign in <MoveRight /></Button>
+            <div className="login-divider"><span>or</span></div>
+            <Button className="demo-button" type="button" variant="outline" onClick={() => setSignedIn(true)}>Continue with Google <small>demo</small></Button>
+            <p className="prototype-note">Prototype access: use any valid email and a 6+ character password.</p>
+            {authNote && <output className="auth-note">{authNote}</output>}
+          </form>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="app-frame">
       <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="dashboard-app">
@@ -132,8 +197,9 @@ export default function Home() {
 
           <TabsList className="side-nav" aria-label="Main navigation">
             <TabsTrigger value="today"><LayoutDashboard /> Dashboard</TabsTrigger>
-            <TabsTrigger value="forecast"><CloudRain /> Energy Forecast</TabsTrigger>
-            <TabsTrigger value="balance"><WandSparkles /> What-If Planner</TabsTrigger>
+            <TabsTrigger value="forecast"><CloudRain /><span className="nav-long">Energy Forecast</span><span className="nav-short">Forecast</span></TabsTrigger>
+            <TabsTrigger value="balance"><WandSparkles /><span className="nav-long">What-If Planner</span><span className="nav-short">What-If</span></TabsTrigger>
+            <TabsTrigger value="rest"><BedDouble /><span className="nav-long">Proactive Rest</span><span className="nav-short">Rest</span></TabsTrigger>
           </TabsList>
 
           <nav className="secondary-nav" aria-label="Secondary navigation">
@@ -144,7 +210,7 @@ export default function Home() {
           <div className="sidebar-bottom">
             <button><UserRound /> Profile</button>
             <button><Settings /> Settings</button>
-            <button><LogOut /> Log out</button>
+            <button onClick={() => { setSignedIn(false); setActiveTab('today'); }}><LogOut /> Log out</button>
           </div>
         </aside>
 
@@ -264,6 +330,62 @@ export default function Home() {
             </section>
             <section className="apply-panel"><div><span className="apply-icon"><MoonStar /></span><p><b>+24% safer reserve</b><small>No essential commitments removed</small></p></div><Button onClick={() => setRebalanced(true)} disabled={rebalanced}>{rebalanced ? <><Check /> Plan applied</> : 'Apply balanced plan'}</Button></section>
             {rebalanced && <output className="success-note"><Check /> Thursday changed from Storm to Cloudy. Your forecast is updated.</output>}
+          </TabsContent>
+
+          <TabsContent value="rest" className="view-panel">
+            <div className="view-title rest-title"><span className="kicker">PROACTIVE REST</span><h2>Rest is part of the work.</h2><p>Complete recovery on purpose, see the likely payoff, and earn progress for stopping before burnout.</p></div>
+
+            <section className="rest-metrics" aria-label="Today’s rest progress">
+              <article><span className="rest-metric-icon"><BedDouble /></span><div><small>Rest KPI</small><strong>{completedQuests.length}/{restQuests.length} quests</strong><span>{restScore}% complete</span></div></article>
+              <article><span className="rest-metric-icon"><TimerReset /></span><div><small>Planned recovery</small><strong>{completedQuests.length * 20 + 15} min</strong><span>Protected today</span></div></article>
+              <article><span className="rest-metric-icon"><TrendingUp /></span><div><small>Evening focus</small><strong>{rechargeResult}%</strong><span>After selected reset</span></div></article>
+            </section>
+
+            <div className="rest-grid">
+              <section className="panel quest-panel">
+                <div className="panel-heading"><div><span className="kicker">TODAY&apos;S REST QUESTS</span><h2>Recovery earns the score</h2></div><span className="rest-score">{restScore}%</span></div>
+                <Progress value={restScore} aria-label={`Rest quest completion ${restScore}%`} />
+                <div className="quest-list">
+                  {restQuests.map((quest) => {
+                    const Icon = quest.icon;
+                    const complete = completedQuests.includes(quest.id);
+                    return (
+                      <article className={complete ? 'quest-row complete' : 'quest-row'} key={quest.id}>
+                        <span className="quest-icon">{complete ? <Check /> : <Icon />}</span>
+                        <div><strong>{quest.title}</strong><p>{quest.detail}</p><small>{quest.reward}</small></div>
+                        <Button variant={complete ? 'secondary' : 'outline'} aria-pressed={complete} onClick={() => toggleQuest(quest.id)}>{complete ? 'Completed' : 'Complete'}</Button>
+                      </article>
+                    );
+                  })}
+                </div>
+              </section>
+
+              <section className="panel recharge-panel">
+                <div className="panel-heading"><div><span className="kicker">RECHARGE CURVE</span><h2>See what rest gives back</h2></div><TrendingUp /></div>
+                <div className="duration-picker" aria-label="Choose rest duration">
+                  {[20, 40, 60].map((minutes) => <button key={minutes} data-active={restMinutes === minutes || undefined} onClick={() => setRestMinutes(minutes)}>{minutes} min</button>)}
+                </div>
+                <div className="curve-summary"><span><small>Focus now</small><strong>30%</strong></span><MoveRight /><span className="curve-result"><small>After resting</small><strong>{rechargeResult}%</strong></span></div>
+                <svg className="recharge-curve" viewBox="0 0 510 190" aria-labelledby="recharge-curve-title">
+                  <title id="recharge-curve-title">Estimated focus rises from 30% to {rechargeResult}% after {restMinutes} minutes of rest</title>
+                  <path className="curve-grid" d="M32 30H488M32 80H488M32 130H488M32 170H488" />
+                  <defs><linearGradient id="curveFill" x1="0" y1="1" x2="0" y2="0"><stop stopColor="#1447e6" stopOpacity=".32"/><stop offset="1" stopColor="#fee685" stopOpacity=".08"/></linearGradient></defs>
+                  <path className="curve-area" d={`M32 150 C150 145 270 116 478 ${Math.max(32, 180 - rechargeResult * 1.65)} L478 170 L32 170Z`} />
+                  <path className="curve-line" d={`M32 150 C150 145 270 116 478 ${Math.max(32, 180 - rechargeResult * 1.65)}`} />
+                  <circle cx="32" cy="150" r="6" /><circle className="curve-end" cx="478" cy={Math.max(32, 180 - rechargeResult * 1.65)} r="7" />
+                </svg>
+                <p className="recharge-copy">If you rest for <b>{restMinutes} minutes now</b>, your estimated coding focus tonight rises from <b>30%</b> to <b>{rechargeResult}%</b>.</p>
+                <small className="estimate-note">Estimate based on your check-in and today&apos;s workload—not a medical prediction.</small>
+              </section>
+
+              <section className="panel environment-panel">
+                <span className="environment-icon"><MapPin /></span>
+                <div><span className="kicker">ENVIRONMENT SHIFT</span><h2>{environmentChecked ? 'You left the study zone.' : 'Change place, change pace.'}</h2><p>{environmentChecked ? '842 steps detected during a 12-minute walk. Your rest quest is ready to complete.' : 'Start a simulated check-in to preview how the mobile version confirms that you stepped away.'}</p><small>Prototype simulation · A mobile build can connect to HealthKit or Google Fit and location only after permission.</small></div>
+                <Button onClick={() => setEnvironmentChecked((current) => !current)}>{environmentChecked ? <><Check /> Check-in complete</> : <><Footprints /> Start check-in</>}</Button>
+              </section>
+
+              <aside className="rest-principle"><EyeOff /><div><span className="kicker">THE RULE</span><h2>No productivity during rest.</h2><p>Scrolling, studying and answering messages do not count. A completed quest means you deliberately disconnected.</p></div></aside>
+            </div>
           </TabsContent>
 
           <footer>EnergyBuddy offers workload guidance, not medical diagnosis. If stress feels unmanageable, contact someone you trust or your university support service.</footer>

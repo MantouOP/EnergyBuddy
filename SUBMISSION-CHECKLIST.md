@@ -13,7 +13,7 @@
 - [x] Clear problem, causes, stakeholders and target student
 - [x] Existing-solution comparison
 - [x] Eight distinct ideas compared
-- [x] Four documented iterations with rationale
+- [x] Five documented iterations with rationale
 - [x] Multi-layered ideation mindmap
 - [x] Problem tree
 - [x] End-to-end user flow
@@ -27,6 +27,10 @@
 - [x] Explainable Storm warning
 - [x] What-If before/after comparison
 - [x] Apply-plan interaction
+- [x] StudyBuddy-inspired prototype login screen
+- [x] Rest Quests and Rest KPI interactions
+- [x] Recharge Curve duration comparison
+- [x] Environment Shift prototype check-in
 - [x] Responsive mobile layout
 - [x] Accessible labels and non-colour status cues
 - [x] Add final screenshots to README
@@ -44,9 +48,9 @@
 ## Final submission
 
 - [ ] Replace every square-bracket placeholder in README
-- [ ] Run `npm run build`
+- [x] Run `npm run build` after the final edit
 - [ ] Verify every public link in an incognito window
-- [ ] Rehearse and record `VIDEO-SCRIPT.md`
+- [ ] Rehearse and record `VIDEO-SCRIPT.md` using Login → Today → Forecast → What-If → Rest
 - [ ] Confirm the video is between 3 and 5 minutes
 - [ ] Submit one public GitHub URL and one unlisted YouTube URL
 - [ ] Submit before 13 September 2026, 11:59 PM (Asia/Kuala_Lumpur)

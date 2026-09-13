@@ -32,7 +32,7 @@ The main stakeholders are students balancing study with work and personal respon
 
 ### Our solution
 
-**EnergyBuddy** is a mobile-first workload companion that represents a student's mental, physical and social capacity as three energy batteries. It converts projected energy reserves into an intuitive seven-day weather forecast, highlighting overload before it becomes a crisis. When a storm is detected, a What-If planner explains the cause and lets the student split, move or recover around tasks while preserving essential commitments. The forecast is an explainable workload-risk estimate—not a medical diagnosis.
+**EnergyBuddy** is a mobile-first workload companion that represents a student's mental, physical and social capacity as three energy batteries. It converts projected energy reserves into an intuitive seven-day weather forecast, highlighting overload before it becomes a crisis. When a storm is detected, a What-If planner explains the cause and lets the student split, move or recover around tasks while preserving essential commitments. Proactive Rest then treats recovery as a first-class task: students complete Rest Quests, compare recharge scenarios and earn progress for deliberately disconnecting. The forecast is an explainable workload-risk estimate—not a medical diagnosis.
 
 ### Core feature set
 
@@ -42,6 +42,10 @@ The main stakeholders are students balancing study with work and personal respon
 - **What-If Planner:** previews the impact of splitting, moving or shortening flexible commitments.
 - **Explainable Warnings:** shows which commitments created the risk instead of outputting a mysterious score.
 - **15-Second Check-In:** lightweight self-reporting keeps the forecast personal without demanding journaling.
+- **Rest Quests:** short, specific recovery tasks make deliberate rest measurable instead of treating it as leftover time.
+- **Recharge Curve:** compares rest durations and shows an explainable estimate of how focus may recover.
+- **Environment Shift:** prototypes step/location confirmation while clearly separating the demo from future permission-based mobile integrations.
+- **Prototype Sign-In:** a polished login flow supports the demo journey without claiming real account security or persistence.
 - **Safety Boundary:** signposts university or trusted-person support when persistent strain is reported.
 
 ## 2. Ideation & Process
@@ -53,6 +57,7 @@ The main stakeholders are students balancing study with work and personal respon
 | **Energy Battery** | **Chosen** | Makes invisible capacity tangible and recognises that mental, physical and social demands feel different. Weak alone because it only describes the present. |
 | **Burnout Weather Forecast** | **Chosen** | Gives an immediate seven-day warning. Weak alone because a forecast without causes or actions can feel fatalistic. |
 | **What-If Planner** | **Chosen refinement** | Turns awareness into action: students can test schedule changes and see a before/after result. |
+| **Proactive Rest** | **Chosen refinement** | Makes rest a deliberate KPI through quests, recharge forecasting and environment change rather than leaving recovery as unstructured “free time.” |
 | Minimum Viable Day | Future mode | Strong for critical days, but expands the prototype beyond the core prevention journey. |
 | Guilt-Free Task Negotiator | Future feature | Useful for drafting extension or rescheduling messages, but introduces external communication and tone risks. |
 | Burnout Buddy | Dropped | Peer support is valuable, but privacy, social pressure and safeguarding complicate an early prototype. |
@@ -67,6 +72,7 @@ The main stakeholders are students balancing study with work and personal respon
 | 2 | Energy Battery | A battery communicates capacity, but a single percentage hides the source of fatigue. | Split capacity into mental, physical and social batteries. |
 | 3 | Burnout Weather | A weekly forecast creates early warning, but students still need agency. | Added an explanation panel and What-If planner. |
 | 4 | EnergyBuddy | Combining batteries and weather is memorable, actionable and feasible. | Scoped the prototype to one complete before/after journey. |
+| 5 | Rest-first EnergyBuddy | Students may understand overload and still feel guilty stopping. | Added Rest Quests, a Recharge Curve and a transparent environment-check simulation. |
 
 ### 2.3 Ideation boards
 
@@ -109,10 +115,11 @@ Useful questions for the consultation:
 
 ### Core flow covered
 
-1. **Today:** understand current weather, the three batteries and today's energy costs.
-2. **Forecast:** identify Thursday's storm and see why demand exceeds projected reserve.
-3. **What-If:** compare the current and balanced schedules side by side.
-4. **Apply:** raise Thursday's projected reserve from 7% to 31% without removing an essential commitment.
+1. **Sign in:** enter the StudyBuddy-inspired prototype gateway and continue with demo access.
+2. **Today:** understand current weather, the three batteries and today's energy costs.
+3. **Forecast:** identify Thursday's storm and see why demand exceeds projected reserve.
+4. **What-If:** compare the current and balanced schedules side by side, then raise Thursday's reserve from 7% to 31%.
+5. **Proactive Rest:** complete Rest Quests, compare 20/40/60-minute recharge scenarios and simulate an environment-change check-in.
 
 ### Key screens
 
@@ -126,8 +133,8 @@ Useful questions for the consultation:
 
 ### Design decisions
 
-- Deep teal conveys trust without using clinical hospital styling.
-- Lime marks agency and recovery; coral identifies risk.
+- Deep navy keeps the experience calm without using clinical hospital styling.
+- Brand blue **#1447E6** drives navigation and action; energy yellow **#FEE685** marks recovery and progress; coral remains reserved for risk.
 - Icons, labels and percentages accompany colour for accessibility.
 - Main body copy remains at least 16px in the mobile experience where practical.
 - Controls have visible focus states and descriptive labels.
@@ -166,6 +173,7 @@ Every warning traces back to visible inputs—starting reserve, task demands and
 | Frontend | React 19, TypeScript, Vinext | Fast responsive prototyping with reusable accessible components | Prototype is currently web-first; package as a PWA or move shared logic into React Native later. |
 | Interface | Tailwind CSS, Base UI, Lucide icons | Consistent visual system and keyboard-accessible primitives | Test colour contrast and screen-reader wording with real users. |
 | Prototype state | React state | Makes the demo deterministic, fast and deployable without accounts | Data resets on refresh; persistence belongs in the build phase. |
+| Mobile integration path | HealthKit / Google Fit + permission-based location | Can verify walking or environment changes in a future Flutter/Swift build | The current web prototype simulates detection and never claims live sensor access. |
 | Build-phase backend | Supabase | Free-tier authentication and Postgres fit a student project | Apply row-level security and collect only data needed for forecasting. |
 | Hosting | Cloudflare-compatible Sites deployment | Provides a shareable demo with a reproducible build | Keep server work within edge-runtime limits. |
 
@@ -196,10 +204,11 @@ Weights begin with conservative defaults and can later adapt from the student's 
 | P0 | Tasks with energy cost | Students can add, categorise and estimate a commitment. |
 | P0 | Seven-day forecast | Each day displays a reserve, weather band and explainable cause. |
 | P0 | What-If planner | Moving, splitting or adding recovery recalculates the forecast before saving. |
+| P0 | Rest Quests + Recharge Curve | Students can complete deliberate recovery tasks and compare the estimated return from different rest durations. |
 | P1 | Persistence | Authenticated users can securely save and retrieve their own plans. |
 | P1 | Notifications | One useful warning appears before a projected storm, with opt-out controls. |
-| P2 | Calendar import | Read-only import reduces duplicate entry after the core loop is validated. |
-| Out of scope | Wearables, medical diagnosis, counsellor dashboards, automatic messages | These add privacy, clinical or integration risk before the core value is proven. |
+| P2 | Calendar and health import | Read-only calendar plus permission-based HealthKit/Google Fit data reduces duplicate entry and can validate walking quests. |
+| Out of scope | Medical diagnosis, counsellor dashboards, automatic messages, covert location tracking | These add privacy, clinical or safeguarding risk before the core value is proven. |
 
 ### Resource and time awareness
 
@@ -222,7 +231,7 @@ EnergyBuddy first serves a university student who balances multiple modules with
 | An open calendar slot looks usable even after an exhausting day. | The slot is interpreted against mental, physical and social reserve. |
 | Overload becomes obvious only after sleep or work deteriorates. | A Storm warning appears several days earlier. |
 | The student knows something is wrong but not what caused it. | The warning names the commitments and missing recovery that created the risk. |
-| Rest feels like falling behind. | What-If Mode shows that targeted recovery can preserve essential work. |
+| Rest feels like falling behind. | Rest Quests count recovery as progress, while the Recharge Curve explains what deliberate rest may give back. |
 
 ### Prototype impact scenario
 
