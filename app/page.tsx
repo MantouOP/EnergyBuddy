@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import Image from 'next/image';
 import {
-  BatteryCharging,
   Brain,
   CalendarDays,
   Check,
@@ -72,6 +72,15 @@ export default function Home() {
     [forecast],
   );
 
+  /* oxlint-disable react/react-compiler -- URL parameters are applied after hydration for shareable prototype views. */
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const view = params.get('view');
+    if (view === 'today' || view === 'forecast' || view === 'balance') setActiveTab(view);
+    if (params.get('balanced') === 'true') setRebalanced(true);
+  }, []);
+  /* oxlint-enable react/react-compiler */
+
   useEffect(() => {
     type ModelContext = {
       registerTool: (
@@ -117,8 +126,8 @@ export default function Home() {
       <Tabs value={activeTab} onValueChange={setActiveTab} orientation="vertical" className="dashboard-app">
         <aside className="sidebar">
           <div className="brand">
-            <span className="brand-icon"><BatteryCharging /></span>
-            <div><strong>EnergyBuddy</strong><span>Burnout Coach</span></div>
+            <span className="brand-logo-crop" aria-hidden="true"><Image src="/energybuddy-logo.png" alt="" width={81} height={81} priority /></span>
+            <div><strong><span>Energy</span><span>Buddy</span></strong><span>Burnout Coach</span></div>
           </div>
 
           <TabsList className="side-nav" aria-label="Main navigation">
