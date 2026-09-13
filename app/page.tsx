@@ -35,7 +35,6 @@ import {
   Play,
   Plus,
   RotateCcw,
-  Settings,
   Shield,
   SunMedium,
   TimerReset,
@@ -132,24 +131,62 @@ const ghostBlockPresets = [
   { label: 'Morning quiet start', time: '8:00–9:00 AM' },
 ];
 
+const initialGhostBlocks: GhostBlock[] = [
+  { id: 'ghost-0', ...ghostBlockPresets[0] },
+];
+
 const initialLocationPins: LocationPin[] = [
   { id: 'campus', label: 'Campus', lat: 3.1209, lng: 101.6538 },
   { id: 'study-zone', label: 'Quiet study zone', lat: 3.1224, lng: 101.6553 },
 ];
 
+type StoredEnergyTask = Omit<EnergyTask, 'icon'>;
+
+const storageKeys = {
+  plan: 'energybuddy.plan',
+  checkIn: 'energybuddy.check-in',
+  quests: 'energybuddy.quests',
+  restMinutes: 'energybuddy.rest-minutes',
+  rebalanced: 'energybuddy.rebalanced',
+  ghostBlocks: 'energybuddy.ghost-blocks',
+  locationPins: 'energybuddy.location-pins',
+} as const;
+
+function readStoredValue<T>(storage: 'local' | 'session', key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const value = (storage === 'local' ? window.localStorage : window.sessionStorage).getItem(key);
+    return value ? JSON.parse(value) as T : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function loadEnergyTasks(): EnergyTask[] {
+  const stored = readStoredValue<StoredEnergyTask[]>('local', storageKeys.plan, []);
+  if (!Array.isArray(stored) || stored.length === 0) return initialTasks;
+
+  return stored
+    .filter((task) => task && typeof task.id === 'string' && typeof task.title === 'string' && typeof task.cost === 'number')
+    .map((task) => ({
+      ...task,
+      icon: initialTasks.find((initial) => initial.id === task.id)?.icon ?? Brain,
+    }));
+}
+
 export default function Home() {
   const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState('today');
-  const [rebalanced, setRebalanced] = useState(false);
-  const [checkIn, setCheckIn] = useState(62);
+  const [rebalanced, setRebalanced] = useState(() => readStoredValue('local', storageKeys.rebalanced, false));
+  const [checkIn, setCheckIn] = useState(() => readStoredValue('local', storageKeys.checkIn, 62));
   const [saved, setSaved] = useState(false);
-  const [completedQuests, setCompletedQuests] = useState<string[]>(['walk']);
-  const [restMinutes, setRestMinutes] = useState(40);
+  const [completedQuests, setCompletedQuests] = useState<string[]>(() => readStoredValue('local', storageKeys.quests, ['walk']));
+  const [restMinutes, setRestMinutes] = useState(() => readStoredValue('local', storageKeys.restMinutes, 40));
   const [environmentChecked, setEnvironmentChecked] = useState(false);
-  const [energyTasks, setEnergyTasks] = useState<EnergyTask[]>(initialTasks);
+  const [energyTasks, setEnergyTasks] = useState<EnergyTask[]>(loadEnergyTasks);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [taskDraft, setTaskDraft] = useState<TaskDraft>({ time: '', title: '', detail: '', cost: 10 });
-  const [locationPins, setLocationPins] = useState<LocationPin[]>(initialLocationPins);
+  const [locationPins, setLocationPins] = useState<LocationPin[]>(() => readStoredValue('session', storageKeys.locationPins, initialLocationPins));
   const [pinLabel, setPinLabel] = useState('');
   const [locationNote, setLocationNote] = useState('Name a place, then click the map to drop a pin.');
   const [aiAssessment, setAiAssessment] = useState<EnergyAssessment | null>(null);
@@ -159,9 +196,10 @@ export default function Home() {
   const [activeMeetingId, setActiveMeetingId] = useState<string | null>(null);
   const [meetingSeconds, setMeetingSeconds] = useState(30 * 60);
   const [timerRunning, setTimerRunning] = useState(false);
-  const [ghostBlocks, setGhostBlocks] = useState<GhostBlock[]>([
-    { id: 'ghost-0', ...ghostBlockPresets[0] },
-  ]);
+  const [ghostBlocks, setGhostBlocks] = useState<GhostBlock[]>(() => readStoredValue('local', storageKeys.ghostBlocks, initialGhostBlocks));
+  const [currentDate, setCurrentDate] = useState<Date | null>(null);
+  const [supportVisible, setSupportVisible] = useState(false);
+  const [profileVisible, setProfileVisible] = useState(false);
   const forecast = rebalanced ? balancedForecast : baseForecast;
   const rechargeResult = restMinutes === 20 ? 58 : restMinutes === 40 ? 75 : 84;
   const restScore = Math.round((completedQuests.length / restQuests.length) * 100);
@@ -177,6 +215,10 @@ export default function Home() {
   const socialBattery = Math.max(0, Math.min(100, 100 - Math.round(socialMinutes * 0.45) + ghostBlocks.length * 10));
   const activeMeeting = socialMeetings.find((meeting) => meeting.id === activeMeetingId);
   const timerDisplay = `${String(Math.floor(meetingSeconds / 60)).padStart(2, '0')}:${String(meetingSeconds % 60).padStart(2, '0')}`;
+  const currentTimeLabel = currentDate?.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }) ?? '--:--';
+  const currentDateLabel = currentDate?.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' }) ?? 'Today';
+  const currentEnergyWeather = checkIn >= 65 ? 'Clear' : checkIn >= 30 ? 'Cloudy' : checkIn >= 15 ? 'Heavy' : 'Storm';
+  const CurrentEnergyIcon = checkIn >= 65 ? SunMedium : checkIn >= 30 ? CloudRain : Zap;
 
   /* oxlint-disable react/react-compiler -- URL parameters are applied after hydration for shareable prototype views. */
   useEffect(() => {
@@ -186,6 +228,38 @@ export default function Home() {
     if (params.get('balanced') === 'true') setRebalanced(true);
   }, []);
   /* oxlint-enable react/react-compiler */
+
+  useEffect(() => {
+    const updateClock = () => setCurrentDate(new Date());
+    const immediate = window.setTimeout(updateClock, 0);
+    const interval = window.setInterval(updateClock, 60_000);
+    return () => {
+      window.clearTimeout(immediate);
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  useEffect(() => {
+    try {
+      const storedTasks: StoredEnergyTask[] = energyTasks.map(({ id, time, title, detail, cost }) => ({ id, time, title, detail, cost }));
+      window.localStorage.setItem(storageKeys.plan, JSON.stringify(storedTasks));
+      window.localStorage.setItem(storageKeys.checkIn, JSON.stringify(checkIn));
+      window.localStorage.setItem(storageKeys.quests, JSON.stringify(completedQuests));
+      window.localStorage.setItem(storageKeys.restMinutes, JSON.stringify(restMinutes));
+      window.localStorage.setItem(storageKeys.rebalanced, JSON.stringify(rebalanced));
+      window.localStorage.setItem(storageKeys.ghostBlocks, JSON.stringify(ghostBlocks));
+    } catch {
+      // The prototype remains usable when browser storage is unavailable.
+    }
+  }, [checkIn, completedQuests, energyTasks, ghostBlocks, rebalanced, restMinutes]);
+
+  useEffect(() => {
+    try {
+      window.sessionStorage.setItem(storageKeys.locationPins, JSON.stringify(locationPins));
+    } catch {
+      // Location pins remain in memory when session storage is unavailable.
+    }
+  }, [locationPins]);
 
   useEffect(() => {
     if (!timerRunning || meetingSeconds <= 0) return;
@@ -377,6 +451,28 @@ export default function Home() {
     setGhostBlocks((current) => current.filter((block) => block.id !== id));
   };
 
+  const resetDemo = () => {
+    if (!window.confirm('Reset your EnergyBuddy plan, quests, pins and protected blocks to the demo defaults?')) return;
+    setEnergyTasks(initialTasks.map((task) => ({ ...task })));
+    setCheckIn(62);
+    setCompletedQuests(['walk']);
+    setRestMinutes(40);
+    setRebalanced(false);
+    setGhostBlocks(initialGhostBlocks.map((block) => ({ ...block })));
+    setLocationPins(initialLocationPins.map((pin) => ({ ...pin })));
+    setAiAssessment(null);
+    setAssessmentError('');
+    setMeetingAgendas({});
+    setActiveMeetingId(null);
+    setMeetingSeconds(30 * 60);
+    setTimerRunning(false);
+    setEnvironmentChecked(false);
+    setSaved(false);
+    setProfileVisible(false);
+    setSupportVisible(false);
+    setActiveTab('today');
+  };
+
   if (status !== 'authenticated') {
     return (
       <main className="login-shell">
@@ -432,13 +528,13 @@ export default function Home() {
           </TabsList>
 
           <nav className="secondary-nav" aria-label="Secondary navigation">
-            <button><Gauge /> Weekly Insights</button>
-            <button><CircleHelp /> Get Support</button>
+            <button onClick={() => setActiveTab('forecast')}><Gauge /> Weekly Insights</button>
+            <button onClick={() => setSupportVisible((current) => !current)}><CircleHelp /> Get Support</button>
           </nav>
 
           <div className="sidebar-bottom">
-            <button><UserRound /> Profile</button>
-            <button><Settings /> Settings</button>
+            <button onClick={() => setProfileVisible((current) => !current)}><UserRound /> Profile</button>
+            <button onClick={resetDemo}><RotateCcw /> Reset demo</button>
             <button onClick={() => void signOut({ redirectTo: '/' })}><LogOut /> Log out</button>
           </div>
         </aside>
@@ -450,13 +546,16 @@ export default function Home() {
               <p>Ready to protect your energy today?</p>
             </div>
             <div className="status-cluster">
-              <div className="date-status"><strong>3:09 PM</strong><span><CalendarDays /> Monday, Sep 13</span></div>
-              <div className="weather-status"><CloudRain /><span><strong>Cloudy</strong>58% now</span></div>
-              <button className="avatar" aria-label={`Open ${session.user?.name ?? session.user?.email ?? 'your'} profile`}>
+              <div className="date-status"><strong>{currentTimeLabel}</strong><span><CalendarDays /> {currentDateLabel}</span></div>
+              <div className="weather-status"><CurrentEnergyIcon /><span><strong>{currentEnergyWeather}</strong>{checkIn}% check-in</span></div>
+              <button className="avatar" aria-label={`Open ${session.user?.name ?? session.user?.email ?? 'your'} profile`} onClick={() => setProfileVisible((current) => !current)}>
                 {(session.user?.name ?? session.user?.email ?? 'EB').split(/\s+|@/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()}
               </button>
             </div>
           </header>
+
+          {profileVisible && <aside className="utility-banner profile-banner"><span><UserRound /></span><div><strong>{session.user?.name ?? 'EnergyBuddy user'}</strong><small>{session.user?.email ?? 'Signed in with Google'}</small></div><button type="button" onClick={() => setProfileVisible(false)}>Close</button></aside>}
+          {supportVisible && <aside className="utility-banner support-banner"><span><HeartHandshake /></span><div><strong>You do not have to handle overwhelming stress alone.</strong><small>Contact someone you trust or your university support service. If you may be in immediate danger, contact local emergency services.</small></div><button type="button" onClick={() => setSupportVisible(false)}>Close</button></aside>}
 
           <TabsContent value="today" className="view-panel">
             <section className="metric-grid" aria-label="Energy summary">

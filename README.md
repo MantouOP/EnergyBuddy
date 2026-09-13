@@ -133,7 +133,7 @@ The warning names the commitments and missing recovery that created the risk ins
 - Lets the student label a study, recovery or commute location and click to place a pin.
 - Can request the browser’s current location only after an explicit button press.
 - Lets the student inspect coordinates and remove pins.
-- Keeps pins in prototype session state rather than silently uploading them.
+- Keeps pins in browser `sessionStorage`, so they survive a refresh in the current tab without being silently uploaded.
 
 ### Social Battery
 
@@ -168,7 +168,8 @@ Ghost Mode creates non-negotiable no-contact blocks for decompression or focus. 
 | Interactive map and location permission | **Built** | Map-click pins, browser geolocation and removal work during the session. |
 | Social meter, agenda and timer | **Built** | Social reserve and Ghost Mode react to local prototype data; the 30-minute timer is functional. |
 | Rest Quests and Recharge Curve | **Interactive prototype** | Quest completion and duration comparison update immediately. |
-| Database persistence | **Planned** | Requires user-owned storage, deletion controls and row-level security. |
+| Browser persistence and reset | **Built** | Plan, check-in, quests and Ghost Mode survive refreshes locally; one confirmed action restores demo defaults. |
+| Cloud database persistence | **Planned** | Requires user-owned storage, deletion controls and row-level security. |
 | Google Calendar synchronisation | **Planned** | Requires a separately consented calendar scope and conflict handling. |
 | HealthKit / Google Fit verification | **Planned** | Must be permission-based and limited to the minimum necessary sensor data. |
 
@@ -302,7 +303,7 @@ flowchart LR
 | AI | OpenAI Responses API, GPT-5.4 Mini by default | Bounded task-level estimates using Structured Outputs. |
 | Mapping | React Leaflet + OpenStreetMap | Interactive pins without a paid map key. |
 | UI | Base UI, Tailwind tooling, Lucide icons, custom CSS | Accessible primitives and a consistent visual language. |
-| State | React state | Fast, deterministic prototype interactions without pretending persistence exists. |
+| State | React state + `localStorage` / `sessionStorage` | Keeps ordinary prototype choices across refreshes while retaining location pins only for the current browser tab. |
 | Hosting | Vercel | Public HTTPS deployment and encrypted server environment variables. |
 
 ### Transparent baseline
