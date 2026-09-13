@@ -1,288 +1,423 @@
-# EnergyBuddy
+<p align="center">
+  <img src="public/energybuddy-logo.png" alt="EnergyBuddy smiling battery logo" width="180" />
+</p>
 
-> **Know your energy. Predict the storm. Prevent burnout.**
+<h1 align="center">EnergyBuddy</h1>
 
-**Team:** `[TEAM NAME]` — `[MEMBER 1]`, `[MEMBER 2]`, `[MEMBER 3]`, `[MEMBER 4]`  
-**Problem Statement:** Lifestyle Track — Beating the Burnout: Stress & Workload Manager  
-**Interactive Prototype:** [EnergyBuddy prototype](https://enerybuddy-prototype.roberhwk.chatgpt.site)
-**Video Presentation:** `[ADD UNLISTED YOUTUBE LINK]`  
-**Presentation Slides:** `[ADD PUBLIC SLIDES LINK IF USED]`
+<p align="center"><strong>Know your energy. Predict the storm. Prevent burnout.</strong></p>
 
-## 1. Project Overview
+<p align="center">
+  <a href="https://energybuddy.vercel.app"><strong>Open the live prototype</strong></a>
+  ·
+  <a href="https://github.com/MantouOP/EnergyBuddy">GitHub repository</a>
+</p>
 
-### The problem
+| Submission detail | Information |
+|---|---|
+| Track | Lifestyle & Personal Productivity |
+| Challenge | Beating the Burnout — Stress & Workload Manager |
+| Project | EnergyBuddy |
+| Repository owner | [MantouOP](https://github.com/MantouOP) |
+| Live deployment | [energybuddy.vercel.app](https://energybuddy.vercel.app) |
+| Video | Add the final 3–5 minute unlisted YouTube link before submission |
 
-University students rarely burn out because of one dramatic event. Deadlines, classes, paid work, commuting, errands and social commitments accumulate across different parts of life. Existing planning tools make time visible, but a free hour is not always a usable hour: a student can have space on a calendar and still lack the mental, physical or social energy needed for the next task.
+## The pitch
 
-This creates three gaps:
+A calendar can tell a student that 4:00 PM is free. It cannot tell them whether they will still have enough mental, physical or social energy to use it.
 
-1. **Cumulative load stays invisible.** Commitments live across calendars, task lists and group chats.
-2. **Planning is time-first, not capacity-first.** Students see when work happens but not its likely energy cost.
-3. **Recovery is reactive.** Most interventions begin after missed work, poor sleep or withdrawal has already appeared.
+**EnergyBuddy is an energy-first planner for university students.** It combines a lightweight daily check-in with editable commitments to forecast overload as familiar weather. When a difficult day appears, the student can see what caused it, test a safer plan, protect social boundaries and schedule deliberate recovery before burnout feels sudden.
 
-The main stakeholders are students balancing study with work and personal responsibilities, followed by friends, lecturers, student-support teams and employers who are affected when overload becomes a crisis.
+The product does not attempt to diagnose burnout. It estimates **workload strain** and gives the student understandable, reversible planning choices.
 
-### Existing solutions and the gap
+## 1. Problem and opportunity
 
-| Product | What it does well | Gap EnergyBuddy addresses |
+### Challenge context
+
+University workload is distributed across assignments, classes, part-time work, commuting, errands, group chats, meetings and personal responsibilities. It is rarely one dramatic event that creates burnout. The danger comes from several individually reasonable commitments accumulating without a shared measure of capacity.
+
+### Three gaps in existing planning
+
+1. **Load is fragmented.** Commitments live in calendars, learning platforms, task lists and chats.
+2. **Planning is time-first.** An empty hour is treated as usable even when the student is mentally or socially depleted.
+3. **Recovery is reactive.** Students are usually encouraged to rest after performance or wellbeing has already deteriorated.
+
+### Primary user
+
+The first user is a university student balancing several modules with group work, social responsibilities and possibly paid work. They need an early warning and a practical way to renegotiate the week—not another productivity streak or a vague reminder to “relax.”
+
+### Stakeholders
+
+| Stakeholder | Need |
+|---|---|
+| Student | Understand total load, identify the cause and choose a manageable intervention. |
+| Group members | Run shorter, better-prepared meetings without exhausting the team. |
+| Friends and family | See the student protect recovery before withdrawing or cancelling at crisis point. |
+| Lecturers and employers | Receive earlier, clearer schedule decisions instead of last-minute failure. |
+| Student support services | Be signposted appropriately without receiving private task data by default. |
+
+### How might we…
+
+> How might we help a busy student notice cumulative overload early, understand which kind of energy is being consumed, and rebalance work, social demands and recovery without making wellbeing feel like another task?
+
+## 2. Existing solutions and the gap
+
+| Solution | Strength | Remaining gap |
 |---|---|---|
-| [Todoist](https://www.todoist.com/help/todoist/features/use-the-calendar-layout-in-todoist-lPHRQTu0o) | Organises tasks, durations and calendar schedules | Primarily visualises **when** work occurs; it does not model separate mental, physical and social reserves or forecast a personal energy crash. |
-| [Finch](https://help.finchcare.com/hc/en-us/articles/42149821015693-New-User-Guide) | Encourages self-care goals through a supportive companion | Supports recovery habits, but does not explain how a student's upcoming academic and work commitments combine into a high-risk day. |
-| Standard calendar apps | Make events and free time visible | Treat every open hour as equivalent and leave the user to judge capacity manually. |
+| Calendar apps | Make events and empty time visible. | Treat every available hour as equally usable. |
+| Task managers such as [Todoist](https://www.todoist.com/help/todoist/features/use-the-calendar-layout-in-todoist-lPHRQTu0o) | Organise priorities, deadlines and durations. | Do not forecast separate mental, physical and social reserves. |
+| Self-care companions such as [Finch](https://help.finchcare.com/hc/en-us/articles/42149821015693-New-User-Guide) | Make supportive habits approachable. | Do not connect upcoming academic demand to an explainable high-risk day. |
+| Stress or mood trackers | Help users reflect on how they felt. | Usually report the problem after the load has already occurred. |
 
-### Our solution
+EnergyBuddy connects the missing loop:
 
-**EnergyBuddy** is a mobile-first workload companion that represents a student's mental, physical and social capacity as three energy batteries. It converts projected energy reserves into an intuitive seven-day weather forecast, highlighting overload before it becomes a crisis. When a storm is detected, a What-If planner explains the cause and lets the student split, move or recover around tasks while preserving essential commitments. Proactive Rest then treats recovery as a first-class task: students complete Rest Quests, compare recharge scenarios and earn progress for deliberately disconnecting. The forecast is an explainable workload-risk estimate—not a medical diagnosis.
+```text
+CHECK IN → FORECAST → EXPLAIN → REBALANCE → PROTECT → RECOVER
+```
 
-### Core feature set
+## 3. The solution
 
-- **Three Batteries:** separate mental, physical and social reserves prevent “tired” from becoming one vague score.
-- **Energy Weather:** Clear, Cloudy, Heavy and Storm conditions make a complex week understandable at a glance.
-- **Seven-Day Forecast:** projects the effect of tasks and recovery before the student commits to the plan.
-- **Energy Places:** lets students label recovery or study locations, click an OpenStreetMap map to drop pins, use browser location with explicit permission, and remove pins.
-- **What-If Planner:** previews the impact of splitting, moving or shortening flexible commitments.
-- **Explainable Warnings:** shows which commitments created the risk instead of outputting a mysterious score.
-- **15-Second Check-In:** lightweight self-reporting keeps the forecast personal without demanding journaling.
-- **Editable Energy Plan:** students can add, revise or remove commitments and see the capacity estimate respond to each energy cost.
-- **AI Energy Assessment:** securely sends the current check-in and plan to a server-side OpenAI Responses API route, then updates every task cost and explains the estimated remaining capacity and confidence.
-- **Social Battery Meter:** converts meetings, presentations and protected quiet blocks into a dedicated daily social reserve.
-- **Meeting Aggregator + Hard-Stop Timer:** groups today’s social commitments, generates a focused 30-minute agenda, and runs a real start/pause/reset countdown.
-- **Ghost Mode Scheduling:** adds or removes non-negotiable no-contact blocks and immediately shows their protective effect on social capacity.
-- **Rest Quests:** short, specific recovery tasks make deliberate rest measurable instead of treating it as leftover time.
-- **Recharge Curve:** compares rest durations and shows an explainable estimate of how focus may recover.
-- **Environment Shift:** prototypes step/location confirmation while clearly separating the demo from future permission-based mobile integrations.
-- **Prototype Sign-In:** a polished login flow supports the demo journey without claiming real account security or persistence.
-- **Safety Boundary:** signposts university or trusted-person support when persistent strain is reported.
+EnergyBuddy combines four ideas that were incomplete alone:
 
-## 2. Ideation & Process
+- **Energy Battery** makes invisible capacity tangible across mental, physical and social energy.
+- **Burnout Weather** turns a complex seven-day projection into Clear, Cloudy, Heavy and Storm conditions.
+- **Social Battery** exposes the hidden cost of group work, presentations and communication.
+- **Proactive Rest** treats recovery as a first-class commitment rather than leftover time.
 
-### 2.1 Ideas we considered
+The defining interaction is the **What-If Planner**. It turns a warning into agency: the student can preserve essential commitments, split deep work, move a flexible task and protect recovery, then see the forecast change before accepting the plan.
 
-| Idea | Decision | Why it was dropped or kept |
+### Core demo moment
+
+A student begins Thursday with **61% energy** but faces **85% demand**. The original schedule ends at **7% reserve — Storm**. EnergyBuddy protects lunch, splits an assignment and moves one flexible revision block. The revised plan ends at **31% reserve — Cloudy**, a **24 percentage-point improvement** without removing an essential lab or paid shift.
+
+## 4. Feature walkthrough
+
+### Today — an editable energy plan
+
+- Shows mental, physical and social battery summaries.
+- Captures a 15-second self-reported energy check-in.
+- Lets the student add, edit and remove commitments.
+- Supports positive energy costs and negative recovery values.
+- Recalculates the visible capacity as the plan changes.
+
+### AI energy assessment
+
+The **AI assess** action sends the current check-in, completed recovery minutes and bounded task fields to a signed-in-only server route. It returns:
+
+- an estimated remaining capacity from 0–100%;
+- a revised cost for every task;
+- a short explanation;
+- up to three contributing factors; and
+- a low, medium or high confidence label.
+
+AI does not reveal a “true” biological energy level. The result is explicitly presented as a workload estimate, and the transparent local calculation remains available when the API is not configured.
+
+### Seven-day energy weather
+
+- **Clear:** 65–100% projected reserve
+- **Cloudy:** 30–64%
+- **Heavy:** 15–29%
+- **Storm:** below 15%
+
+The warning names the commitments and missing recovery that created the risk instead of displaying an unexplained score.
+
+### What-If Planner
+
+- Compares the current and balanced schedules side by side.
+- Keeps essential commitments visible.
+- Demonstrates splitting, moving and inserting recovery.
+- Applies the selected plan and updates the forecast.
+
+### Energy Places
+
+- Uses an interactive OpenStreetMap map.
+- Lets the student label a study, recovery or commute location and click to place a pin.
+- Can request the browser’s current location only after an explicit button press.
+- Lets the student inspect coordinates and remove pins.
+- Keeps pins in prototype session state rather than silently uploading them.
+
+### Social Battery
+
+- Totals the minutes spent talking, meeting or presenting.
+- Converts social commitments into a dedicated projected reserve.
+- Aggregates the day’s meetings in one place.
+- Generates a focused 30-minute agenda for each meeting.
+- Provides a real start, pause and reset hard-stop countdown.
+- Warns when the group load is likely to exceed the student’s comfortable reserve.
+
+### Ghost Mode
+
+Ghost Mode creates non-negotiable no-contact blocks for decompression or focus. Adding or removing a block immediately changes the projected Social Battery. The current prototype demonstrates scheduling locally; production Google Calendar sync would require a separate, explicit Calendar permission.
+
+### Proactive Rest
+
+- **Rest Quests** turn vague advice into small, specific recovery actions.
+- **Rest KPI** makes deliberate stopping count as progress.
+- **Recharge Curve** compares 20, 40 and 60-minute recovery scenarios.
+- **Environment Shift** demonstrates how a future permission-based mobile build could validate leaving a study zone.
+- The rule is intentionally strict: studying, scrolling and replying to messages do not count as rest.
+
+## 5. What is built, prototyped and planned
+
+| Capability | Status | Current behaviour |
 |---|---|---|
-| **Energy Battery** | **Chosen** | Makes invisible capacity tangible and recognises that mental, physical and social demands feel different. Weak alone because it only describes the present. |
-| **Burnout Weather Forecast** | **Chosen** | Gives an immediate seven-day warning. Weak alone because a forecast without causes or actions can feel fatalistic. |
-| **What-If Planner** | **Chosen refinement** | Turns awareness into action: students can test schedule changes and see a before/after result. |
-| **Proactive Rest** | **Chosen refinement** | Makes rest a deliberate KPI through quests, recharge forecasting and environment change rather than leaving recovery as unstructured “free time.” |
-| Minimum Viable Day | Future mode | Strong for critical days, but expands the prototype beyond the core prevention journey. |
-| Guilt-Free Task Negotiator | Future feature | Useful for drafting extension or rescheduling messages, but introduces external communication and tone risks. |
-| Burnout Buddy | Dropped | Peer support is valuable, but privacy, social pressure and safeguarding complicate an early prototype. |
-| Stress Receipt | Future insight | Helpful for reflection, but weekly reporting acts after the load has already happened. |
-| Recovery Menu | Integrated | Kept as contextual recommendations inside What-If rather than as a separate product area. |
+| Responsive dashboard and navigation | **Built** | Works across desktop and mobile layouts. |
+| Google sign-in | **Built** | Uses Auth.js and Google OAuth; deployment credentials remain server-side. |
+| Editable energy plan | **Built** | Add, edit and remove tasks; capacity reacts immediately. |
+| AI assessment server route | **Built — key required** | Uses OpenAI Structured Outputs when `OPENAI_API_KEY` is configured. |
+| Forecast and What-If interaction | **Interactive prototype** | Demonstrates the complete 7% Storm to 31% Cloudy scenario. |
+| Interactive map and location permission | **Built** | Map-click pins, browser geolocation and removal work during the session. |
+| Social meter, agenda and timer | **Built** | Social reserve and Ghost Mode react to local prototype data; the 30-minute timer is functional. |
+| Rest Quests and Recharge Curve | **Interactive prototype** | Quest completion and duration comparison update immediately. |
+| Database persistence | **Planned** | Requires user-owned storage, deletion controls and row-level security. |
+| Google Calendar synchronisation | **Planned** | Requires a separately consented calendar scope and conflict handling. |
+| HealthKit / Google Fit verification | **Planned** | Must be permission-based and limited to the minimum necessary sensor data. |
 
-### 2.2 How the idea evolved
+## 6. Ideation and decision process
 
-| Iteration | Concept | What we learned | Change made |
-|---|---|---|---|
-| 1 | Stress tracker + task list | Logging stress reports the problem but can become another chore. | Reduced input to one 15-second energy check-in. |
-| 2 | Energy Battery | A battery communicates capacity, but a single percentage hides the source of fatigue. | Split capacity into mental, physical and social batteries. |
-| 3 | Burnout Weather | A weekly forecast creates early warning, but students still need agency. | Added an explanation panel and What-If planner. |
-| 4 | EnergyBuddy | Combining batteries and weather is memorable, actionable and feasible. | Scoped the prototype to one complete before/after journey. |
-| 5 | Rest-first EnergyBuddy | Students may understand overload and still feel guilty stopping. | Added Rest Quests, a Recharge Curve and a transparent environment-check simulation. |
+### Ideas considered
 
-### 2.3 Ideation boards
+| Idea | Decision | Reasoning |
+|---|---|---|
+| Energy Battery | **Chosen as foundation** | Makes capacity tangible, but a present-only battery cannot warn about next Thursday. |
+| Burnout Weather Forecast | **Chosen and combined** | Creates a glanceable early warning, but needs explanation and action to avoid feeling fatalistic. |
+| SocialBattery | **Chosen and combined** | Exposes group work and communication as a distinct, frequently hidden form of load. |
+| Proactive Rest | **Chosen and combined** | Addresses guilt-driven “junk rest” by making recovery deliberate and measurable. |
+| What-If Planner | **Chosen as core interaction** | Converts awareness into a reversible decision with a visible before/after result. |
+| Minimum Viable Day | Future mode | Useful during critical periods, but broader than the central prevention journey. |
+| Guilt-Free Task Negotiator | Future feature | Could draft extension messages, but introduces communication and tone risks. |
+| Stress Receipt | Future insight | Helpful for reflection, but acts after the week rather than before overload. |
+| Peer Burnout Buddy | Dropped | Creates privacy, safeguarding and additional social-pressure risks too early. |
 
-#### Mindmap
+### How the concept evolved
 
-![EnergyBuddy ideation mindmap](docs/ideation-mindmap.svg)
+| Iteration | Observation | Design response |
+|---|---|---|
+| 1. Stress tracker + task list | Logging stress can become another chore. | Reduced input to one fast energy check-in. |
+| 2. Single Energy Battery | One percentage hides the reason for fatigue. | Split reserve into mental, physical and social batteries. |
+| 3. Burnout Weather | Early warning is useful but passive. | Added cause explanations and the What-If Planner. |
+| 4. SocialBattery | Group work and presentations were hidden inside generic tasks. | Added meeting aggregation, a hard-stop timer and Ghost Mode. |
+| 5. Proactive Rest | Students can understand overload and still feel guilty stopping. | Added Rest Quests, a Rest KPI and Recharge Curve. |
+| 6. EnergyBuddy prototype | Manual costs help explain the model but require guesswork. | Added optional structured AI estimates while preserving visible inputs and safety wording. |
 
-This map connects the underlying causes and observable signals of overload to interventions and intended outcomes. It captures the central insight that students experience workload as energy, not only time.
+### Ideation boards
+
+#### Mind map
+
+![EnergyBuddy ideation mind map](docs/ideation-mindmap.svg)
+
+The mind map connects causes, signals, interventions and outcomes. Its key insight is that students experience workload as energy, not only time.
 
 #### Problem tree
 
 ![Student burnout problem tree](docs/problem-tree.svg)
 
-The tree separates visible consequences from root causes. EnergyBuddy acts on fragmented planning, time-only tools and reactive recovery before they produce a crisis.
+The problem tree separates visible consequences from root causes such as fragmented planning, time-only tools, social friction and reactive recovery.
 
-#### Core user flow
+#### User flow
 
-![EnergyBuddy core user flow](docs/user-flow.svg)
+![EnergyBuddy user flow](docs/user-flow.svg)
 
-The chosen flow moves from a low-effort signal to an explained warning, a controllable intervention and a measurable improvement.
+The selected journey moves from a low-effort signal to an explained warning, a controllable intervention and measurable improvement.
 
-### 2.4 Mentor consultation
+### Mentor consultation
 
-> **Team action required:** Replace the row below with genuine feedback after speaking to a mentor. Do not invent feedback; include the date, the exact suggestion, and whether or how the concept changed.
+This row must contain genuine consultation evidence; it is intentionally not fabricated.
 
-| Date | Mentor | Feedback received | What was changed |
+| Date | Mentor | Feedback received | Change made |
 |---|---|---|---|
-| `[DATE]` | `[MENTOR NAME]` | `[SPECIFIC FEEDBACK]` | `[CHANGE MADE, OR WHY THE TEAM DISAGREED]` |
+| Add date | Add mentor name | Add the mentor’s specific observation | Explain what changed or why the team disagreed |
 
-Useful questions for the consultation:
+Suggested questions:
 
 - Is the battery-plus-weather metaphor immediately understandable?
-- Does What-If Mode feel helpful or controlling?
-- Is the prototype scope realistic for the build phase?
-- Which claim needs stronger evidence or safer wording?
+- Does the What-If Planner feel supportive or controlling?
+- Is Social Battery useful without increasing pressure?
+- Which claim needs safer wording or stronger evidence?
+- Is the build-phase scope realistic?
 
-## 3. Design & Prototype
+## 7. Prototype journey
 
-**UI Prototype:** [Open the interactive EnergyBuddy prototype](https://energybuddy.vercel.app)
+1. **Sign in** with Google.
+2. **Today:** adjust the check-in and edit the energy plan.
+3. Select **AI assess** to request task-level estimates when the server key is configured.
+4. **Forecast:** inspect the Storm day and its cause.
+5. **What-If:** compare both schedules and apply the balanced plan.
+6. **Energy Places:** label a recovery location and place a pin.
+7. **Social Battery:** generate an agenda, run the meeting timer and protect a Ghost Mode block.
+8. **Proactive Rest:** complete a quest and compare recharge durations.
 
-### Core flow covered
+Direct prototype views:
 
-1. **Sign in:** authenticate securely with a real Google account through Auth.js.
-2. **Today:** understand current weather, the three batteries and today's energy costs.
-3. **Forecast:** identify Thursday's storm and see why demand exceeds projected reserve.
-4. **What-If:** compare the current and balanced schedules side by side, then raise Thursday's reserve from 7% to 31%.
-5. **Social Battery:** review group-work load, generate meeting agendas, enforce a 30-minute timer and protect Ghost Mode blocks.
-6. **Proactive Rest:** complete Rest Quests, compare 20/40/60-minute recharge scenarios and simulate an environment-change check-in.
+- [Dashboard](https://energybuddy.vercel.app/?view=today)
+- [Energy Forecast](https://energybuddy.vercel.app/?view=forecast)
+- [Energy Places](https://energybuddy.vercel.app/?view=places)
+- [What-If Planner](https://energybuddy.vercel.app/?view=balance)
+- [Social Battery](https://energybuddy.vercel.app/?view=social)
+- [Proactive Rest](https://energybuddy.vercel.app/?view=rest)
 
-### Key screens
+### Screens
 
-| Today and three batteries | Seven-day forecast |
+| Today dashboard | Seven-day forecast |
 |---|---|
 | ![Today dashboard with three energy batteries](docs/screens/01-today.png) | ![Seven-day energy weather forecast](docs/screens/02-forecast.png) |
 
 | What-If comparison | Balanced plan applied |
 |---|---|
-| ![What-If planner comparing current and balanced schedules](docs/screens/03-what-if.png) | ![What-If planner after the balanced schedule is applied](docs/screens/04-balanced.png) |
+| ![What-If planner comparing current and balanced schedules](docs/screens/03-what-if.png) | ![What-If planner after applying the balanced schedule](docs/screens/04-balanced.png) |
 
-### Design decisions
+## 8. Design decisions
 
-- Deep navy keeps the experience calm without using clinical hospital styling.
-- Brand blue **#1447E6** drives navigation and action; energy yellow **#FEE685** marks recovery and progress; coral remains reserved for risk.
-- Icons, labels and percentages accompany colour for accessibility.
-- Main body copy remains at least 16px in the mobile experience where practical.
-- Controls have visible focus states and descriptive labels.
-- The interface remains functional from 320px mobile width to desktop.
+- Deep navy creates a calm environment without clinical hospital styling.
+- Brand blue **#1447E6** drives navigation and action.
+- Energy yellow **#FEE685** represents recovery and progress.
+- Coral is reserved for risk and hard-stop warnings.
+- Colour is always supported by labels, icons or percentages.
+- Controls use semantic buttons, descriptive labels and visible focus treatment.
+- The layout adapts from desktop down to narrow mobile screens.
+- Sensitive permissions such as location are requested only through an explicit action.
 
-## 4. What Makes It Different
+## 9. Technical architecture
 
-### A calendar for energy, not only time
-
-Conventional planning asks whether a task fits into an hour. EnergyBuddy asks whether it fits into the student's projected capacity at that time.
-
-### Three-dimensional fatigue
-
-A single wellness score can hide the reason a student is struggling. EnergyBuddy separates mental, physical and social energy, so a recovery suggestion can match the depleted category.
-
-### Weather as an early-warning language
-
-Forecasts are familiar, glanceable and naturally future-oriented. “Thursday is stormy” communicates urgency without presenting the student as failing.
-
-### An actionable forecast
-
-The What-If planner is the defining twist. It does not merely report overload: it demonstrates the impact of splitting deep work, moving a flexible task and protecting recovery before the student applies the changes.
-
-### Explainability over black-box AI
-
-Every warning traces back to visible inputs—starting reserve, task demands and recovery. Students can disagree with estimates and adjust them. This builds trust and keeps the MVP technically realistic.
-
-## 5. Technical Architecture & Feasibility
-
-![EnergyBuddy technical architecture](docs/architecture.svg)
-
-### Technology stack
-
-| Layer | Technology | Why it fits | Constraint and response |
-|---|---|---|---|
-| Frontend | Next.js, React 19, TypeScript | Fast responsive prototyping with reusable accessible components and production-ready server routes | Prototype is currently web-first; package as a PWA or move shared logic into React Native later. |
-| AI assessment | OpenAI Responses API + GPT-5.4 Mini Structured Outputs | Returns bounded, task-level estimates with a short explanation and confidence level | Requires `OPENAI_API_KEY`; results are workload guidance rather than an objective or medical measurement. |
-| Mapping | React Leaflet + OpenStreetMap | Supports interactive labels, map-click pins and browser geolocation without a paid map key | Pins are session-only in this prototype; persistent sharing requires a consent-aware backend. |
-| Social scheduling | Next.js PWA-ready interactions; Google Calendar API planned | Demonstrates meeting aggregation, hard-stop timing and protected availability before requesting calendar access | Current blocks are prototype state; a production sync needs a separate, explicit Calendar OAuth scope and conflict controls. |
-| Authentication | Auth.js + Google OAuth 2.0 | Gives students a familiar, secure sign-in without EnergyBuddy handling passwords | OAuth credentials stay in encrypted deployment environment variables. |
-| Interface | Tailwind CSS, Base UI, Lucide icons | Consistent visual system and keyboard-accessible primitives | Test colour contrast and screen-reader wording with real users. |
-| Prototype state | React state | Makes the demo deterministic, fast and deployable without accounts | Data resets on refresh; persistence belongs in the build phase. |
-| Mobile integration path | HealthKit / Google Fit + permission-based location | Can verify walking or environment changes in a future Flutter/Swift build | The current web prototype simulates detection and never claims live sensor access. |
-| Build-phase backend | Supabase | Free-tier authentication and Postgres fit a student project | Apply row-level security and collect only data needed for forecasting. |
-| Hosting | Vercel | Provides a shareable Next.js demo with encrypted environment variables and server routes | Production OAuth callbacks must match the deployed domain exactly. |
-
-### Explainable forecast model
-
-The MVP keeps a transparent weighted model as its immediate baseline and offers an optional AI assessment for richer task-level estimates:
-
-```text
-starting reserve = weighted daily check-in + previous-day recovery
-category demand  = sum(task intensity × duration × category weight)
-projected reserve = clamp(starting reserve − demand + planned recovery, 0, 100)
+```mermaid
+flowchart LR
+    U[Student browser] --> N[Next.js 16 application]
+    N --> C[React energy, social, rest and map interactions]
+    N --> A[Auth.js server route]
+    A --> G[Google OAuth]
+    N --> E[Signed-in energy assessment route]
+    E --> O[OpenAI Responses API]
+    C --> M[OpenStreetMap tiles]
+    C --> S[Session-only prototype state]
+    N -. planned .-> D[(User-owned database)]
+    N -. explicit future consent .-> GC[Google Calendar API]
+    N -. mobile build .-> H[HealthKit / Google Fit]
 ```
 
-Forecast bands:
+### Stack
 
-- **Clear:** 65–100% reserve
-- **Cloudy:** 30–64%
-- **Heavy:** 15–29%
-- **Storm:** below 15%
-
-When the student selects **AI assess**, a signed-in-only server route sends the self-reported check-in, completed recovery minutes and bounded task fields to the OpenAI Responses API. Structured Outputs return one cost per task, the estimated remaining capacity, confidence and up to three contributing factors. The API key never reaches the browser, responses are not stored by the API request, and task text is treated as untrusted data. Weights begin with conservative defaults and can later adapt from the student's “estimated vs actual” feedback. Every score measures workload strain only and must not be described as detecting or diagnosing a medical condition.
-
-### Build plan and scope
-
-| Priority | Build-phase deliverable | Definition of done |
+| Layer | Technology | Purpose |
 |---|---|---|
-| P0 | Daily check-in | A student can record mental, physical and social reserve in under 30 seconds. |
-| P0 | Tasks with energy cost | Students can add, categorise and estimate a commitment. |
-| P0 | Seven-day forecast | Each day displays a reserve, weather band and explainable cause. |
-| P0 | What-If planner | Moving, splitting or adding recovery recalculates the forecast before saving. |
-| P0 | Social Battery | Meeting minutes reduce a dedicated reserve; agendas, a hard-stop timer and Ghost Mode blocks are interactive. |
-| P0 | Rest Quests + Recharge Curve | Students can complete deliberate recovery tasks and compare the estimated return from different rest durations. |
-| P1 | Persistence | Authenticated users can securely save and retrieve their own plans. |
-| P1 | Notifications | One useful warning appears before a projected storm, with opt-out controls. |
-| P2 | Calendar and health import | Read-only calendar plus permission-based HealthKit/Google Fit data reduces duplicate entry and can validate walking quests. |
-| Out of scope | Medical diagnosis, counsellor dashboards, automatic messages, covert location tracking | These add privacy, clinical or safeguarding risk before the core value is proven. |
+| Application | Next.js 16, React 19, TypeScript | Responsive interface and server routes in one deployable project. |
+| Authentication | Auth.js + Google OAuth 2.0 | Familiar sign-in without EnergyBuddy handling Google passwords. |
+| AI | OpenAI Responses API, GPT-5.4 Mini by default | Bounded task-level estimates using Structured Outputs. |
+| Mapping | React Leaflet + OpenStreetMap | Interactive pins without a paid map key. |
+| UI | Base UI, Tailwind tooling, Lucide icons, custom CSS | Accessible primitives and a consistent visual language. |
+| State | React state | Fast, deterministic prototype interactions without pretending persistence exists. |
+| Hosting | Vercel | Public HTTPS deployment and encrypted server environment variables. |
 
-### Resource and time awareness
+### Transparent baseline
 
-- **Frontend/design:** one member can implement the three-screen journey and responsive states.
-- **Logic/data:** one member can own the scoring model, seed scenarios and later persistence.
-- **Research/testing:** one member can run five short student usability tests and document mentor feedback.
-- **Pitch/documentation:** one member can maintain this README, rehearse the demo and verify every public link.
-- **Cost:** the interface and map use free/open-source libraries; AI assessment consumes a small paid API request only when the student explicitly selects it.
+```text
+starting reserve  = self-reported check-in + recovery allowance
+task demand       = sum(estimated task costs)
+projected reserve = clamp(starting reserve − task demand, 0, 100)
+```
 
-## 6. Impact
+The student can edit every task cost. The AI route enriches the estimate; it does not hide or replace the underlying inputs.
 
-### Primary user
+### AI route safeguards
 
-EnergyBuddy first serves a university student who balances multiple modules with paid work, commuting and social commitments. This audience needs early visibility and permission to rebalance—not another streak, productivity score or generic reminder to “relax.”
+- Requires an authenticated session.
+- Keeps `OPENAI_API_KEY` on the server.
+- Accepts at most 20 tasks with bounded field lengths and numeric ranges.
+- Treats task text as untrusted data rather than model instructions.
+- Uses a strict JSON schema for capacity, confidence, factors and task estimates.
+- Sends a hashed safety identifier rather than an email address.
+- Sets API response storage to false.
+- Leaves the existing plan unchanged if the request fails.
 
-### Before and after
+## 10. Privacy, safety and responsible use
 
-| Before EnergyBuddy | After EnergyBuddy |
-|---|---|
-| An open calendar slot looks usable even after an exhausting day. | The slot is interpreted against mental, physical and social reserve. |
-| Overload becomes obvious only after sleep or work deteriorates. | A Storm warning appears several days earlier. |
-| The student knows something is wrong but not what caused it. | The warning names the commitments and missing recovery that created the risk. |
-| Rest feels like falling behind. | Rest Quests count recovery as progress, while the Recharge Curve explains what deliberate rest may give back. |
+EnergyBuddy is a workload-awareness prototype. It does not diagnose, treat or prevent a medical condition and should never replace professional support.
 
-### Prototype impact scenario
+- Energy percentages are planning estimates, not biological measurements.
+- Location is requested only after the student selects **Use my location**.
+- Prototype pins, plans and social blocks are not represented as permanent cloud records.
+- A production database must provide data export, deletion, row-level access control and minimum-data collection.
+- Calendar and health integrations must use separate, understandable consent.
+- The interface signposts trusted people or university support when stress feels unmanageable.
+- Counsellor dashboards, covert tracking and automatic messages to third parties are out of scope.
 
-A student begins Thursday with 61% energy but faces 85% demand from a lab, assignment, revision block and paid shift. Their original plan ends at a 7% reserve. EnergyBuddy splits the assignment, protects lunch and moves one flexible revision block; the revised plan ends at 31%. That **+24 percentage-point safety margin** is the clear before/after moment demonstrated in the prototype.
+## 11. Feasibility and roadmap
 
-### Reach and scalability
+| Priority | Deliverable | Definition of done |
+|---|---|---|
+| P0 | Check-in, editable plan and batteries | A student can represent current capacity and commitments in under one minute. |
+| P0 | Forecast and explanation | Every projected day has a weather band and understandable cause. |
+| P0 | What-If Planner | A student can compare and apply a safer schedule. |
+| P0 | Social Battery | Meeting load, agenda, timer and Ghost Mode interactions work. |
+| P0 | Proactive Rest | Rest Quests and recharge comparisons are interactive. |
+| P1 | Secure persistence | Authenticated users can save, export and delete their own data. |
+| P1 | Feedback calibration | Students compare estimated and actual task impact to personalise future weights. |
+| P1 | Notifications | One useful pre-Storm warning with quiet hours and opt-out controls. |
+| P2 | Calendar integration | Read-only import first; write operations require confirmation and conflict handling. |
+| P2 | Mobile sensor integration | Permission-based steps or location can validate optional environment-change quests. |
 
-The same model can expand from individual students to opt-in university wellbeing programmes without exposing private task details. Longer term, configurable energy categories can serve interns, shift workers and caregivers. Scaling should follow user validation and privacy review, not precede them.
+The current prototype is intentionally web-first and deployable. A production version could remain a PWA or move shared logic into React Native or Flutter after user validation.
 
-## 7. Run Locally
+## 12. Run locally
 
 Requirements: Node.js 22.13 or newer.
 
-Copy `.env.example` to `.env.local`, then provide Google OAuth credentials and an OpenAI API key. `OPENAI_MODEL` is optional and defaults to `gpt-5.4-mini`.
+```bash
+git clone https://github.com/MantouOP/EnergyBuddy.git
+cd EnergyBuddy
+npm install
+```
+
+Copy `.env.example` to `.env.local` and provide:
+
+```dotenv
+AUTH_SECRET=
+AUTH_GOOGLE_ID=
+AUTH_GOOGLE_SECRET=
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-5.4-mini
+```
+
+`OPENAI_API_KEY` is required only for AI assessment. Never commit real credentials.
 
 ```bash
-npm install
 npm run dev
 ```
 
-Then open `http://localhost:3000`.
+Open `http://localhost:3000`.
 
-For a production build:
+Production checks:
 
 ```bash
 npm run build
+npx oxlint app/page.tsx app/api/energy-assessment/route.ts components/energy-map.tsx
 ```
 
-## 8. Responsible Use
+## 13. Repository guide
 
-EnergyBuddy is a workload-awareness prototype. It does not diagnose, treat or prevent a medical condition, and its forecast should never replace professional care. A production version would minimise data collection, keep task details private by default, allow full data deletion and direct students to appropriate campus or emergency support when needed.
+```text
+app/page.tsx                         Main interactive prototype
+app/api/auth/[...nextauth]/route.ts Google authentication endpoint
+app/api/energy-assessment/route.ts  Protected AI assessment endpoint
+components/energy-map.tsx           Interactive Leaflet map
+docs/                                Ideation boards, flow and screenshots
+VIDEO-SCRIPT.md                      Timed 4½-minute presentation script
+SUBMISSION-CHECKLIST.md              Final hand-in checklist
+```
 
-## Submission checklist
+## 14. Final submission checklist
 
-- [ ] Replace team placeholders at the top of this README.
-- [ ] Add genuine mentor feedback and the resulting change.
-- [x] Add 4–8 final screenshots under Section 3.
-- [ ] Verify the prototype and all design links in an incognito window.
-- [ ] Record a 3–5 minute video using `VIDEO-SCRIPT.md`.
-- [ ] Upload the video as Unlisted and replace the link above.
-- [ ] Make the final GitHub repository public.
-- [ ] Test the public repository and YouTube links while signed out.
+- [x] Public GitHub repository
+- [x] Hosted prototype
+- [x] Problem, audience and stakeholder definition
+- [x] Competitor gap analysis
+- [x] Nine ideas compared with selection rationale
+- [x] Six documented design iterations
+- [x] Ideation mind map, problem tree and user flow
+- [x] Responsive interactive prototype
+- [x] Technical feasibility and responsible-use boundaries
+- [ ] Replace the mentor consultation row with genuine evidence
+- [ ] Record the 3–5 minute video using [`VIDEO-SCRIPT.md`](VIDEO-SCRIPT.md)
+- [ ] Upload the video as **Unlisted** and add its link at the top of this README
+- [ ] Test the repository, prototype, OAuth and video links while signed out
+
+---
+
+EnergyBuddy helps students see overload early, understand why it is happening, and make room for recovery before running on empty.
