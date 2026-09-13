@@ -262,11 +262,11 @@ Direct prototype views:
 
 | Today dashboard | Seven-day forecast |
 |---|---|
-| ![Today dashboard with three energy batteries](docs/screens/01-today.png) | ![Seven-day energy weather forecast](docs/screens/02-forecast.png) |
+| ![Latest EnergyBuddy dashboard with energy summary, forecast, editable plan and daily check-in](docs/screens/01-today.png) | ![Latest seven-day energy forecast with explainable reserve levels](docs/screens/02-forecast.png) |
 
-| What-If comparison | Balanced plan applied |
+| Social Battery | Proactive Rest |
 |---|---|
-| ![What-If planner comparing current and balanced schedules](docs/screens/03-what-if.png) | ![What-If planner after applying the balanced schedule](docs/screens/04-balanced.png) |
+| ![Social Battery dashboard with meeting load, hard-stop timer and Ghost Mode](docs/screens/03-social-battery.png) | ![Proactive Rest dashboard with rest quests and recharge curve](docs/screens/04-proactive-rest.png) |
 
 ## 8. Design decisions
 
