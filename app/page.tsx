@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
+import { signIn, signOut, useSession } from 'next-auth/react';
 import {
   BedDouble,
   Brain,
@@ -18,9 +19,7 @@ import {
   HeartHandshake,
   LayoutDashboard,
   Lightbulb,
-  LockKeyhole,
   LogOut,
-  Mail,
   MapPin,
   MoonStar,
   MoveRight,
@@ -35,8 +34,6 @@ import {
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -79,8 +76,7 @@ const restQuests = [
 ];
 
 export default function Home() {
-  const [signedIn, setSignedIn] = useState(false);
-  const [authNote, setAuthNote] = useState('');
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState('today');
   const [rebalanced, setRebalanced] = useState(false);
   const [checkIn, setCheckIn] = useState(62);
@@ -149,7 +145,7 @@ export default function Home() {
     setCompletedQuests((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
   };
 
-  if (!signedIn) {
+  if (status !== 'authenticated') {
     return (
       <main className="login-shell">
         <section className="login-card" aria-label="EnergyBuddy sign in">
@@ -163,24 +159,23 @@ export default function Home() {
             <div className="login-benefit"><TimerReset /><span><b>Tonight&apos;s focus</b><small>30% → 75% after a 40-minute reset</small></span></div>
           </div>
 
-          <form className="login-form" onSubmit={(event) => { event.preventDefault(); setSignedIn(true); }}>
+          <div className="login-form">
             <div className="login-mobile-brand"><span className="brand-logo-crop" aria-hidden="true"><Image src="/energybuddy-logo.png" alt="" width={81} height={81} /></span><strong><span>Energy</span><span>Buddy</span></strong></div>
             <span className="kicker">WELCOME BACK</span>
             <h2>Sign in to EnergyBuddy</h2>
             <p>Pick up your forecast and today&apos;s recovery plan.</p>
 
-            <label htmlFor="email">Email address</label>
-            <div className="auth-input"><Mail /><Input id="email" name="email" type="email" placeholder="alex@university.edu" autoComplete="email" required /></div>
-            <label htmlFor="password">Password</label>
-            <div className="auth-input"><LockKeyhole /><Input id="password" name="password" type="password" placeholder="Enter your password" autoComplete="current-password" minLength={6} required /></div>
-
-            <div className="auth-options"><label htmlFor="remember"><Checkbox id="remember" /> Remember me</label><button type="button" onClick={() => setAuthNote('Password reset is not connected in this prototype.')}>Forgot password?</button></div>
-            <Button className="sign-in-button" type="submit">Sign in <MoveRight /></Button>
-            <div className="login-divider"><span>or</span></div>
-            <Button className="demo-button" type="button" variant="outline" onClick={() => setSignedIn(true)}>Continue with Google <small>demo</small></Button>
-            <p className="prototype-note">Prototype access: use any valid email and a 6+ character password.</p>
-            {authNote && <output className="auth-note">{authNote}</output>}
-          </form>
+            <Button
+              className="google-button"
+              type="button"
+              disabled={status === 'loading'}
+              onClick={() => void signIn('google', { redirectTo: '/' })}
+            >
+              <span className="google-mark" aria-hidden="true">G</span>
+              {status === 'loading' ? 'Checking session…' : 'Continue with Google'}
+            </Button>
+            <p className="prototype-note">Secure sign-in powered by Google. EnergyBuddy never receives your Google password.</p>
+          </div>
         </section>
       </main>
     );
@@ -210,20 +205,22 @@ export default function Home() {
           <div className="sidebar-bottom">
             <button><UserRound /> Profile</button>
             <button><Settings /> Settings</button>
-            <button onClick={() => { setSignedIn(false); setActiveTab('today'); }}><LogOut /> Log out</button>
+            <button onClick={() => void signOut({ redirectTo: '/' })}><LogOut /> Log out</button>
           </div>
         </aside>
 
         <section className="workspace">
           <header className="workspace-header">
             <div>
-              <h1>Hello, Alex!</h1>
+              <h1>Hello, {session.user?.name?.split(' ')[0] ?? 'friend'}!</h1>
               <p>Ready to protect your energy today?</p>
             </div>
             <div className="status-cluster">
               <div className="date-status"><strong>3:09 PM</strong><span><CalendarDays /> Monday, Sep 13</span></div>
               <div className="weather-status"><CloudRain /><span><strong>Cloudy</strong>58% now</span></div>
-              <button className="avatar" aria-label="Open profile">AM</button>
+              <button className="avatar" aria-label={`Open ${session.user?.name ?? session.user?.email ?? 'your'} profile`}>
+                {(session.user?.name ?? session.user?.email ?? 'EB').split(/\s+|@/).slice(0, 2).map((part) => part[0]).join('').toUpperCase()}
+              </button>
             </div>
           </header>
 

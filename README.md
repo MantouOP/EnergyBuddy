@@ -115,7 +115,7 @@ Useful questions for the consultation:
 
 ### Core flow covered
 
-1. **Sign in:** enter the StudyBuddy-inspired prototype gateway and continue with demo access.
+1. **Sign in:** authenticate securely with a real Google account through Auth.js.
 2. **Today:** understand current weather, the three batteries and today's energy costs.
 3. **Forecast:** identify Thursday's storm and see why demand exceeds projected reserve.
 4. **What-If:** compare the current and balanced schedules side by side, then raise Thursday's reserve from 7% to 31%.
@@ -170,12 +170,13 @@ Every warning traces back to visible inputs—starting reserve, task demands and
 
 | Layer | Technology | Why it fits | Constraint and response |
 |---|---|---|---|
-| Frontend | React 19, TypeScript, Vinext | Fast responsive prototyping with reusable accessible components | Prototype is currently web-first; package as a PWA or move shared logic into React Native later. |
+| Frontend | Next.js, React 19, TypeScript | Fast responsive prototyping with reusable accessible components and production-ready server routes | Prototype is currently web-first; package as a PWA or move shared logic into React Native later. |
+| Authentication | Auth.js + Google OAuth 2.0 | Gives students a familiar, secure sign-in without EnergyBuddy handling passwords | OAuth credentials stay in encrypted deployment environment variables. |
 | Interface | Tailwind CSS, Base UI, Lucide icons | Consistent visual system and keyboard-accessible primitives | Test colour contrast and screen-reader wording with real users. |
 | Prototype state | React state | Makes the demo deterministic, fast and deployable without accounts | Data resets on refresh; persistence belongs in the build phase. |
 | Mobile integration path | HealthKit / Google Fit + permission-based location | Can verify walking or environment changes in a future Flutter/Swift build | The current web prototype simulates detection and never claims live sensor access. |
 | Build-phase backend | Supabase | Free-tier authentication and Postgres fit a student project | Apply row-level security and collect only data needed for forecasting. |
-| Hosting | Cloudflare-compatible Sites deployment | Provides a shareable demo with a reproducible build | Keep server work within edge-runtime limits. |
+| Hosting | Vercel | Provides a shareable Next.js demo with encrypted environment variables and server routes | Production OAuth callbacks must match the deployed domain exactly. |
 
 ### Explainable forecast model
 

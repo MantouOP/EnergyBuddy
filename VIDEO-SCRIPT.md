@@ -4,7 +4,7 @@ This script stays under the five-minute limit. Rehearse once with a timer and ke
 
 ## 0:00–0:25 — Hook and sign-in
 
-**Visual:** Start on the EnergyBuddy login screen, then use **Continue with Google — demo**.
+**Visual:** Start on the EnergyBuddy login screen, then use **Continue with Google**.
 
 “A student can have two free hours and still have no energy left to use them. Calendars show where time goes, but not the mental, physical and social cost of everything we carry. EnergyBuddy makes that invisible load visible before burnout feels sudden.”
 
