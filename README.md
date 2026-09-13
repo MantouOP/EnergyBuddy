@@ -42,6 +42,7 @@ The main stakeholders are students balancing study with work and personal respon
 - **What-If Planner:** previews the impact of splitting, moving or shortening flexible commitments.
 - **Explainable Warnings:** shows which commitments created the risk instead of outputting a mysterious score.
 - **15-Second Check-In:** lightweight self-reporting keeps the forecast personal without demanding journaling.
+- **Editable Energy Plan:** students can add, revise or remove commitments and see the capacity estimate respond to each energy cost.
 - **Rest Quests:** short, specific recovery tasks make deliberate rest measurable instead of treating it as leftover time.
 - **Recharge Curve:** compares rest durations and shows an explainable estimate of how focus may recover.
 - **Environment Shift:** prototypes step/location confirmation while clearly separating the demo from future permission-based mobile integrations.

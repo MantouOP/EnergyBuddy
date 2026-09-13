@@ -24,10 +24,13 @@ import {
   MoonStar,
   MoveRight,
   PhoneOff,
+  Pencil,
+  Plus,
   Settings,
   SunMedium,
   TimerReset,
   TrendingUp,
+  Trash2,
   UserRound,
   WandSparkles,
   Zap,
@@ -56,12 +59,15 @@ const balancedForecast = baseForecast.map((item) =>
       : item,
 );
 
-const tasks = [
-  { time: '9:00', title: 'Data Structures lecture', detail: '1 hr · campus', cost: 12, icon: Brain },
-  { time: '12:30', title: 'Lunch away from screens', detail: '30 min · recovery', cost: -8, icon: Coffee },
-  { time: '2:00', title: 'Algorithms assignment', detail: '2.5 hrs · deep work', cost: 28, icon: Lightbulb },
-  { time: '6:30', title: 'Society committee meeting', detail: '1 hr · group work', cost: 18, icon: HeartHandshake },
+const initialTasks = [
+  { id: 'lecture', time: '9:00', title: 'Data Structures lecture', detail: '1 hr · campus', cost: 12, icon: Brain },
+  { id: 'lunch', time: '12:30', title: 'Lunch away from screens', detail: '30 min · recovery', cost: -8, icon: Coffee },
+  { id: 'assignment', time: '2:00', title: 'Algorithms assignment', detail: '2.5 hrs · deep work', cost: 28, icon: Lightbulb },
+  { id: 'meeting', time: '6:30', title: 'Society committee meeting', detail: '1 hr · group work', cost: 18, icon: HeartHandshake },
 ];
+
+type EnergyTask = (typeof initialTasks)[number];
+type TaskDraft = Pick<EnergyTask, 'time' | 'title' | 'detail' | 'cost'>;
 
 const batteries = [
   { label: 'Mental energy', value: 42, note: 'Protect focus', icon: Brain, tone: 'violet' },
@@ -84,12 +90,19 @@ export default function Home() {
   const [completedQuests, setCompletedQuests] = useState<string[]>(['walk']);
   const [restMinutes, setRestMinutes] = useState(40);
   const [environmentChecked, setEnvironmentChecked] = useState(false);
+  const [energyTasks, setEnergyTasks] = useState<EnergyTask[]>(initialTasks);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
+  const [taskDraft, setTaskDraft] = useState<TaskDraft>({ time: '', title: '', detail: '', cost: 10 });
   const forecast = rebalanced ? balancedForecast : baseForecast;
   const rechargeResult = restMinutes === 20 ? 58 : restMinutes === 40 ? 75 : 84;
   const restScore = Math.round((completedQuests.length / restQuests.length) * 100);
   const averageEnergy = useMemo(
     () => Math.round(forecast.reduce((sum, item) => sum + item.energy, 0) / forecast.length),
     [forecast],
+  );
+  const planCapacity = useMemo(
+    () => Math.max(0, Math.min(100, 134 - energyTasks.reduce((sum, task) => sum + task.cost, 0))),
+    [energyTasks],
   );
 
   /* oxlint-disable react/react-compiler -- URL parameters are applied after hydration for shareable prototype views. */
@@ -143,6 +156,29 @@ export default function Home() {
 
   const toggleQuest = (id: string) => {
     setCompletedQuests((current) => current.includes(id) ? current.filter((item) => item !== id) : [...current, id]);
+  };
+
+  const startEditingTask = (task: EnergyTask) => {
+    setTaskDraft({ time: task.time, title: task.title, detail: task.detail, cost: task.cost });
+    setEditingTaskId(task.id);
+  };
+
+  const addTask = () => {
+    const id = `task-${Date.now()}`;
+    const task: EnergyTask = { id, time: '3:00', title: 'New commitment', detail: '30 min · flexible', cost: 10, icon: Brain };
+    setEnergyTasks((current) => [...current, task]);
+    startEditingTask(task);
+  };
+
+  const saveTask = () => {
+    if (!editingTaskId || !taskDraft.title.trim() || !taskDraft.time.trim()) return;
+    setEnergyTasks((current) => current.map((task) => task.id === editingTaskId ? { ...task, ...taskDraft, title: taskDraft.title.trim(), detail: taskDraft.detail.trim() } : task));
+    setEditingTaskId(null);
+  };
+
+  const removeTask = (id: string) => {
+    setEnergyTasks((current) => current.filter((task) => task.id !== id));
+    setEditingTaskId(null);
   };
 
   if (status !== 'authenticated') {
@@ -259,18 +295,32 @@ export default function Home() {
               </section>
 
               <section className="panel load-panel">
-                <div className="panel-heading"><div><span className="kicker">TODAY</span><h2>Your energy plan</h2></div><span className="load-chip">84% capacity</span></div>
+                <div className="panel-heading"><div><span className="kicker">TODAY</span><h2>Your energy plan</h2></div><div className="task-heading-actions"><span className="load-chip">{planCapacity}% capacity</span><button className="add-task-button" type="button" onClick={addTask}><Plus /> Add</button></div></div>
                 <div className="task-list">
-                  {tasks.map((task) => {
+                  {energyTasks.map((task) => {
                     const Icon = task.icon;
+                    if (editingTaskId === task.id) {
+                      return (
+                        <form className="task-editor" key={task.id} onSubmit={(event) => { event.preventDefault(); saveTask(); }}>
+                          <label><span>Time</span><input type="text" inputMode="numeric" value={taskDraft.time} onChange={(event) => setTaskDraft((current) => ({ ...current, time: event.target.value }))} placeholder="9:00" required /></label>
+                          <label className="task-title-field"><span>Commitment</span><input value={taskDraft.title} onChange={(event) => setTaskDraft((current) => ({ ...current, title: event.target.value }))} placeholder="Task name" required /></label>
+                          <label className="task-detail-field"><span>Details</span><input value={taskDraft.detail} onChange={(event) => setTaskDraft((current) => ({ ...current, detail: event.target.value }))} placeholder="1 hr · campus" /></label>
+                          <label><span>Energy %</span><input type="number" min="-100" max="100" value={taskDraft.cost} onChange={(event) => setTaskDraft((current) => ({ ...current, cost: Number(event.target.value) }))} aria-describedby={`energy-help-${task.id}`} /></label>
+                          <small id={`energy-help-${task.id}`} className="energy-help">Positive drains energy; negative restores it.</small>
+                          <div className="task-editor-actions"><button className="delete-task-button" type="button" onClick={() => removeTask(task.id)}><Trash2 /> Remove</button><button type="button" onClick={() => setEditingTaskId(null)}>Cancel</button><button className="save-task-button" type="submit"><Check /> Save</button></div>
+                        </form>
+                      );
+                    }
                     return (
-                      <article className="task-row" key={task.title}>
+                      <article className="task-row" key={task.id}>
                         <time>{task.time}</time><span className="task-icon"><Icon /></span>
                         <div><strong>{task.title}</strong><small>{task.detail}</small></div>
                         <span className={task.cost < 0 ? 'cost recover' : 'cost'}>{task.cost < 0 ? '+' : '−'}{Math.abs(task.cost)}%</span>
+                        <button className="edit-task-button" type="button" aria-label={`Edit ${task.title}`} onClick={() => startEditingTask(task)}><Pencil /></button>
                       </article>
                     );
                   })}
+                  {energyTasks.length === 0 && <div className="empty-task-state"><p>Your plan is empty.</p><button type="button" onClick={addTask}><Plus /> Add your first commitment</button></div>}
                 </div>
               </section>
 
