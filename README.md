@@ -4,7 +4,7 @@
 
 **Team:** `[TEAM NAME]` — `[MEMBER 1]`, `[MEMBER 2]`, `[MEMBER 3]`, `[MEMBER 4]`  
 **Problem Statement:** Lifestyle Track — Beating the Burnout: Stress & Workload Manager  
-**Interactive Prototype:** [EneryBuddy prototype](https://enerybuddy-prototype.apt-lake-7306.chatgpt.site)  
+**Interactive Prototype:** [EneryBuddy prototype](https://enerybuddy-prototype.roberhwk.chatgpt.site)  
 **Video Presentation:** `[ADD UNLISTED YOUTUBE LINK]`  
 **Presentation Slides:** `[ADD PUBLIC SLIDES LINK IF USED]`
 
@@ -105,7 +105,7 @@ Useful questions for the consultation:
 
 ## 3. Design & Prototype
 
-**UI Prototype:** [Open the interactive EneryBuddy prototype](https://enerybuddy-prototype.apt-lake-7306.chatgpt.site)
+**UI Prototype:** [Open the interactive EneryBuddy prototype](https://enerybuddy-prototype.roberhwk.chatgpt.site)
 
 ### Core flow covered
 
